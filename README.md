@@ -1,59 +1,47 @@
-# ChefsitosFront
+## Chefsitos Frontend
 
-This project was generated using [Angular CLI](https://github.com/angular/angular-cli) version 21.2.3.
+Frontend para proyecto final de TSIS
 
-## Development server
+## Requisitos
 
-To start a local development server, run:
+- Node.js 22.12.0. Se puede utilizar [https://github.com/nvm-sh/nvm](Node Version Manager) para instalar y gestionar versiones de Node.js.
+- npm incluido con Node.js
 
-```bash
-ng serve
-```
+> Este proyecto usa Angular CLI local, por lo que no es necesario tener `ng` global en la misma versión.
 
-Once the server is running, open your browser and navigate to `http://localhost:4200/`. The application will automatically reload whenever you modify any of the source files.
+## Instalación
 
-## Code scaffolding
-
-Angular CLI includes powerful code scaffolding tools. To generate a new component, run:
+Instala las dependencias del proyecto:
 
 ```bash
-ng generate component component-name
+npm install
 ```
 
-For a complete list of available schematics (such as `components`, `directives`, or `pipes`), run:
+## Ejecutar en desarrollo
 
 ```bash
-ng generate --help
+npx ng version # Verificar la versión de Angular CLI
+npx ng serve  # Levantar el servidor de desarrollo
 ```
 
-## Building
-
-To build the project run:
+La aplicación quedará disponible en:
 
 ```bash
-ng build
+http://localhost:4200
 ```
 
-This will compile your project and store the build artifacts in the `dist/` directory. By default, the production build optimizes your application for performance and speed.
-
-## Running unit tests
-
-To execute unit tests with the [Vitest](https://vitest.dev/) test runner, use the following command:
+## Ejecutar en otro puerto
 
 ```bash
-ng test
+npx ng serve --port 4300
 ```
 
-## Running end-to-end tests
-
-For end-to-end (e2e) testing, run:
+## Build de producción
 
 ```bash
-ng e2e
+npx ng build
 ```
 
-Angular CLI does not come with an end-to-end testing framework by default. You can choose one that suits your needs.
+## Estándar de codificación
 
-## Additional Resources
-
-For more information on using the Angular CLI, including detailed command references, visit the [Angular CLI Overview and Command Reference](https://angular.dev/tools/cli) page.
+Se han incluído configuración de Vscode y Prettier en el proyecto para formateo de código.
