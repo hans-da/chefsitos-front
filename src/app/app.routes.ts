@@ -57,7 +57,15 @@ export const routes: Routes = [
     ]
   },
   {
+    path: 'error',
+    loadComponent: () => import('./features/error/error.component').then(m => m.ErrorComponent)
+  },
+  {
+    path: '404',
+    loadComponent: () => import('./features/not-found/not-found.component').then(m => m.NotFoundComponent)
+  },
+  {
     path: '**',
-    redirectTo: ''
+    redirectTo: '404'
   }
 ];

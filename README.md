@@ -1,6 +1,6 @@
-# UAMIShop Frontend (Angular 21 + Tailwind CSS v4)
+# Chefsitos Frontend (Angular 21 + Tailwind CSS v4)
 
-Bienvenido al frontend de **UAMIShop**, una plataforma de comercio electrónico moderna, elegante e innovadora diseñada para la venta de productos físicos. Este proyecto consume tres microservicios independientes y ofrece una experiencia de usuario fluida basada en **Angular Signals**.
+Bienvenido al frontend de **Chefsitos**, una plataforma de comercio electrónico profesional diseñada para operar con una arquitectura de microservicios reales. Este proyecto ha sido alineado meticulosamente con los contratos de backend para ofrecer una experiencia de usuario robusta y sin mocks.
 
 ---
 
@@ -8,96 +8,65 @@ Bienvenido al frontend de **UAMIShop**, una plataforma de comercio electrónico 
 
 - **Angular 21**: Uso de _Standalone Components_ y _Zoneless Change Detection_.
 - **Signals**: Reactividad de vanguardia para la gestión del carrito, autenticación y estados de UI.
-- **Tailwind CSS v4**: Estilos modernos, responsivos y altamente personalizables.
-- **Reactive Forms**: Validaciones estrictas y flujos de datos robustos.
-- **Docker + Nginx**: Empaquetado ligero y configuración de proxy inverso para evitar problemas de CORS.
-
----
-
-## Requisitos Previos
-
-Antes de comenzar, asegúrate de tener instalado:
-
-- **Node.js 22.12.0** o superior.
-- **Yarn** (recomendado) o npm.
-- **Docker** (para despliegue en contenedores).
+- **Tailwind CSS v4**: Estilos modernos con el motor de alto rendimiento v4.
+- **Gestión Global de Errores**: Sistema de 3 niveles (GlobalHandler, HttpInterceptor y UI) para prevenir pantallas en blanco.
+- **Docker + Nginx**: Configuración optimizada para despliegue en el puerto **8084**.
 
 ---
 
 ## Arquitectura de Microservicios
 
-El frontend está configurado para conectarse a tres servicios en el host local. La comunicación se realiza a través de un **Proxy Nginx** en producción o mediante `proxy.conf.json` en desarrollo:
+El frontend consume directamente los siguientes microservicios reales a través de un proxy inverso configurado en Nginx:
 
-- **Catálogo API**: `http://localhost:8081`
-- **Órdenes API**: `http://localhost:8082`
-- **Ventas/Carrito API**: `http://localhost:8083`
+- **Catálogo API** (Port 8081): Gestión de productos y categorías.
+- **Órdenes API** (Port 8082): Ciclo de vida completo del pedido.
+- **Ventas API** (Port 8083): Gestión del carrito de compras.
 
----
-
-## Desarrollo Local
-
-Para ejecutar el proyecto en modo desarrollo con recarga automática:
-
-1. **Instalar dependencias:**
-
-   ```bash
-   yarn install
-   ```
-
-2. **Iniciar servidor de desarrollo (Port 4200):**
-
-   ```bash
-   yarn start
-   ```
-
-3. **Acceder a la aplicación:**
-   Abre [http://localhost:4200](http://localhost:4200) en tu navegador.
+> **Nota de Alineación**: Se han eliminado todos los mocks. Los payloads de las peticiones (ej. `nuevaCantidad` en carrito, transiciones de estado en órdenes) coinciden 100% con los contratos del backend.
 
 ---
 
 ## Despliegue con Docker (Recomendado)
 
-Para empaquetar y ejecutar la aplicación en el puerto **8084** de forma aislada:
+Para levantar la aplicación en el puerto **8084**:
 
 1. **Construir la imagen:**
 
    ```bash
-   docker build -t uamishop-front:latest .
+   docker build -t chefsitos-front:latest .
    ```
 
 2. **Levantar el contenedor:**
 
    ```bash
-   docker run -d -p 8084:80 --name uamishop-front uamishop-front:latest
+   docker run -d -p 8084:80 --name chefsitos-front --add-host=host.docker.internal:host-gateway chefsitos-front:latest
    ```
 
-3. **Verificar:**
-   La aplicación estará disponible en [http://localhost:8084](http://localhost:8084).
+3. **Verificación:**
+   Accede a [http://localhost:8084](http://localhost:8084).
 
 ---
 
-## Autenticación (Simulada)
+## Gestión de Errores
 
-El sistema utiliza una autenticación simulada persistente en `localStorage`. Puedes probar los dos roles principales:
+La aplicación implementa una estrategia de resiliencia avanzada:
 
-- **Rol ADMIN**: Permite acceder al Panel de Administración (`/admin`), gestionar categorías, productos y ver métricas reales.
-- **Rol CUSTOMER**: Permite navegar el catálogo, gestionar el carrito y realizar pedidos reales.
-
-> **Nota:** Al iniciar sesión, se utiliza un `TEST_CLIENT_ID` predefinido para vincular tus órdenes en el backend.
+- **Páginas de Error Visuales**: Componentes dedicados para errores 404 y fallos críticos (500).
+- **Global Error Handler**: Captura excepciones de ejecución en TypeScript sin detener la aplicación.
+- **Interceptores Resilientes**: Redirecciones automáticas ante fallos de servidor o sesiones expiradas.
 
 ---
 
-## Estructura del Proyecto
+## Autenticación (Modo Demo)
 
-- `src/app/core`: Modelos, servicios API y guards de seguridad.
-- `src/app/shared`: Componentes UI reutilizables (Navbar, Footer, Toasts, Badges).
-- `src/app/features`: Módulos principales (Catalog, Cart, Orders, Admin Dashboard).
-- `src/app/environments`: Configuración de URLs de microservicios.
+El sistema utiliza una autenticación persistente basada en LocalStorage para simular roles reales sin necesidad de un microservicio de seguridad externo:
+
+- **Admin**: Acceso al panel de control con métricas reales calculadas desde el catálogo.
+- **Customer**: Flujo de compra completo, desde el registro del carrito hasta la creación de la orden.
 
 ---
 
 ## Notas de Implementación
 
-- **Gestión de Imágenes**: El formulario de productos incluye una URL de imagen por defecto (Unsplash) para asegurar que la activación del producto sea exitosa en el backend sin requerir carga manual de archivos.
-- **Zoneless**: La aplicación funciona sin `zone.js`, optimizando el rendimiento mediante el uso exclusivo de Signals para la detección de cambios.
-- **SEO**: Se han incluido etiquetas meta dinámicas y estructura semántica HTML5.
+- **Imágenes**: Debido a que el backend no persiste URLs de imagen, se utilizan iconos y placeholders elegantes para mantener una estética premium.
+- **Activación de Productos**: El backend requiere que el producto tenga imágenes asociadas en DB para poder activarse. Los nuevos productos creados por la interfaz se registran correctamente pero permanecerán inactivos hasta que se cumpla dicha regla en el backend.

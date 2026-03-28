@@ -87,6 +87,17 @@ import { FooterComponent } from '../../../shared/components/footer/footer.compon
                         <input type="text" formControlName="nombreCategoria" class="block w-full border-gray-300 rounded-xl shadow-sm focus:border-indigo-500 focus:ring-indigo-500 sm:text-sm px-4 py-3 bg-gray-50 border">
                       </div>
                       <div>
+                        <label class="block text-sm font-bold text-gray-700 mb-2">Categoría Padre (Opcional)</label>
+                        <select formControlName="idCategoriaPadre" class="block w-full border-gray-300 rounded-xl shadow-sm focus:border-indigo-500 focus:ring-indigo-500 sm:text-sm px-4 py-3 bg-gray-50 border">
+                          <option [value]="null">Ninguna (Categoría Raíz)</option>
+                          @for (cat of categories(); track cat.idCategoria) {
+                             @if (cat.idCategoria !== currentEditId) {
+                               <option [value]="cat.idCategoria">{{ cat.nombreCategoria }}</option>
+                             }
+                          }
+                        </select>
+                      </div>
+                      <div>
                         <label class="block text-sm font-bold text-gray-700 mb-2">Descripción</label>
                         <textarea formControlName="descripcion" rows="3" class="block w-full border-gray-300 rounded-xl shadow-sm focus:border-indigo-500 focus:ring-indigo-500 sm:text-sm px-4 py-3 bg-gray-50 border"></textarea>
                       </div>
@@ -125,7 +136,8 @@ export class AdminCategoriesComponent implements OnInit {
 
   catForm = this.fb.group({
     nombreCategoria: ['', Validators.required],
-    descripcion: ['', Validators.required]
+    descripcion: ['', Validators.required],
+    idCategoriaPadre: [null]
   });
 
   ngOnInit() {
@@ -154,7 +166,8 @@ export class AdminCategoriesComponent implements OnInit {
     this.currentEditId = cat.idCategoria;
     this.catForm.patchValue({
       nombreCategoria: cat.nombreCategoria,
-      descripcion: cat.descripcion
+      descripcion: cat.descripcion,
+      idCategoriaPadre: (cat.idCategoriaPadre as any) || null
     });
     this.isModalOpen.set(true);
   }

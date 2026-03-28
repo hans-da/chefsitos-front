@@ -2,22 +2,25 @@ import { HttpErrorResponse, HttpInterceptorFn } from '@angular/common/http';
 import { inject } from '@angular/core';
 import { throwError } from 'rxjs';
 import { catchError } from 'rxjs/operators';
+import { Router } from '@angular/router';
 import { NotificationService } from '../services/notification.service';
 
 export const httpErrorInterceptor: HttpInterceptorFn = (req, next) => {
   const notificationService = inject(NotificationService);
+  const router = inject(Router);
 
   return next(req).pipe(
     catchError((error: HttpErrorResponse) => {
       let errorMessage = 'Ocurrió un error inesperado';
 
-      if (error.error && error.error.message) {
-        // Backend returned standard error message
+      if (error.status === 401) {
+        errorMessage = 'Sesión expirada';
+        router.navigate(['/login']);
+      } else if (error.status === 0 || error.status >= 500) {
+        errorMessage = 'El servidor no responde. Por favor, intenta más tarde.';
+        router.navigate(['/error']);
+      } else if (error.error && error.error.message) {
         errorMessage = error.error.message;
-      } else if (error.status === 0) {
-        errorMessage = 'No se pudo conectar con el servidor';
-      } else if (error.status >= 500) {
-        errorMessage = 'Error del servidor: Intente más tarde';
       } else if (error.status === 404) {
         errorMessage = 'Recurso no encontrado';
       }

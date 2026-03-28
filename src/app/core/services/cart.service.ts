@@ -51,19 +51,22 @@ export class CartService {
   }
 
   addProduct(productoId: string, cantidad: number): Observable<Cart> {
-    const current = this.cartSignal();
     const clientId = this.auth.currentUser()?.id;
     if (!clientId) throw new Error('Usuario no autenticado');
 
+    const current = this.cartSignal();
+    
+    // Si no hay carrito o el estado no es ACTIVO, crear uno nuevo y luego agregar el producto
     if (!current || current.estado !== 'ACTIVO') {
       return this.createCart(clientId).pipe(
-        map(newCart => {
-          this.http.post<Cart>(this.api.getSalesUrl(`/api/v1/carritos/${newCart.carritoId}/productos`), { productoId, cantidad }).subscribe(c => this.cartSignal.set(c));
-          return newCart; // simplify chain for now
-        })
+        switchMap(newCart => 
+          this.http.post<Cart>(this.api.getSalesUrl(`/api/v1/carritos/${newCart.carritoId}/productos`), { productoId, cantidad })
+        ),
+        tap(cart => this.cartSignal.set(cart))
       );
     }
 
+    // Si ya existe un carrito activo, agregar directamente
     return this.http.post<Cart>(this.api.getSalesUrl(`/api/v1/carritos/${current.carritoId}/productos`), { productoId, cantidad }).pipe(
       tap(cart => this.cartSignal.set(cart))
     );
@@ -73,7 +76,7 @@ export class CartService {
     const current = this.cartSignal();
     if (!current) throw new Error('No hay carrito activo');
 
-    return this.http.patch<Cart>(this.api.getSalesUrl(`/api/v1/carritos/${current.carritoId}/productos/${productoId}`), { cantidad }).pipe(
+    return this.http.patch<Cart>(this.api.getSalesUrl(`/api/v1/carritos/${current.carritoId}/productos/${productoId}`), { nuevaCantidad: cantidad }).pipe(
       tap(cart => this.cartSignal.set(cart))
     );
   }

@@ -3,6 +3,7 @@ import { CommonModule, Location } from '@angular/common';
 import { FormBuilder, ReactiveFormsModule, Validators } from '@angular/forms';
 import { ActivatedRoute, RouterModule } from '@angular/router';
 import { CatalogService } from '../../core/services/catalog.service';
+import { CategoryService } from '../../core/services/category.service';
 import { CartService } from '../../core/services/cart.service';
 import { NotificationService } from '../../core/services/notification.service';
 import { Product, ProductStats } from '../../core/models/product.model';
@@ -66,8 +67,13 @@ import { FooterComponent } from '../../shared/components/footer/footer.component
                   {{ product()?.precio | currency:product()?.moneda }}
                 </div>
                 
-                <div class="prose prose-sm sm:prose text-gray-500 mb-8 max-w-none">
+                <div class="prose prose-sm sm:prose text-gray-500 mb-6 max-w-none">
                   <p>{{ product()?.descripcion }}</p>
+                </div>
+
+                <div class="mb-8 p-4 bg-gray-50 rounded-2xl border border-gray-100">
+                  <span class="text-[10px] text-gray-400 font-bold uppercase tracking-widest block mb-1">Categoría</span>
+                  <span class="text-sm font-semibold text-gray-700">{{ categoryName() }}</span>
                 </div>
 
                 <!-- Stats -->
@@ -147,6 +153,7 @@ import { FooterComponent } from '../../shared/components/footer/footer.component
 export class ProductDetailComponent implements OnInit {
   route = inject(ActivatedRoute);
   catalogService = inject(CatalogService);
+  categoryService = inject(CategoryService);
   cartService = inject(CartService);
   notification = inject(NotificationService);
   fb = inject(FormBuilder);
@@ -155,6 +162,7 @@ export class ProductDetailComponent implements OnInit {
   loading = signal(true);
   product = signal<Product | null>(null);
   stats = signal<ProductStats | null>(null);
+  categoryName = signal<string>('Cargando...');
 
   addToCartForm = this.fb.group({
     quantity: [1, [Validators.required, Validators.min(1), Validators.max(10)]]
@@ -176,6 +184,12 @@ export class ProductDetailComponent implements OnInit {
       next: (p) => {
         this.product.set(p);
         this.loading.set(false);
+
+        // Fetch category name
+        this.categoryService.getCategoryById(p.idCategoria).subscribe({
+          next: (c) => this.categoryName.set(c.nombreCategoria),
+          error: () => this.categoryName.set('Categoría no disponible')
+        });
 
         // Fetch stats independently
         this.catalogService.getProductStats(id).subscribe({

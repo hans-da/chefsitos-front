@@ -26,11 +26,32 @@ export class OrderService {
   }
 
   createDirectOrder(clienteId: string, direccion: Address, items: CartItem[]): Observable<Order> {
-    return this.http.post<Order>(this.api.getOrdersUrl('/api/v1/ordenes/directa'), { clienteId, items, direccion });
+    // Map CartItem[] to ItemOrdenRequest[] (only productoId and cantidad)
+    const itemsMapped = items.map(item => ({
+      productoId: item.productoId,
+      cantidad: item.cantidad
+    }));
+    return this.http.post<Order>(this.api.getOrdersUrl('/api/v1/ordenes/directa'), { clienteId, items: itemsMapped, direccion });
   }
 
   confirmOrder(id: string): Observable<Order> {
     return this.http.post<Order>(this.api.getOrdersUrl(`/api/v1/ordenes/${id}/confirmar`), {});
+  }
+
+  processPayment(id: string, referenciaPago: string): Observable<Order> {
+    return this.http.post<Order>(this.api.getOrdersUrl(`/api/v1/ordenes/${id}/pago`), { referenciaPago });
+  }
+
+  markInPreparation(id: string): Observable<Order> {
+    return this.http.post<Order>(this.api.getOrdersUrl(`/api/v1/ordenes/${id}/en-preparacion`), {});
+  }
+
+  markAsSent(id: string, proveedorLogistico: string, numeroGuia: string): Observable<Order> {
+    return this.http.post<Order>(this.api.getOrdersUrl(`/api/v1/ordenes/${id}/enviada`), { proveedorLogistico, numeroGuia });
+  }
+
+  markAsDelivered(id: string): Observable<Order> {
+    return this.http.post<Order>(this.api.getOrdersUrl(`/api/v1/ordenes/${id}/entregada`), {});
   }
 
   cancelOrder(id: string, motivo: string): Observable<Order> {

@@ -24,8 +24,7 @@ export class AuthService {
   }
 
   loginAsAdmin() {
-    // Generate a pseudo-admin id or use the same with admin role for testing UI features.
-    const user: User = { id: 'admin-1234', name: 'Administrador Tienda', role: 'ADMIN' };
+    const user: User = { id: '742912a7-f5dc-461b-9d41-332308cf240e', name: 'Administrador Tienda', role: 'ADMIN' };
     this.setUser(user);
     this.router.navigate(['/admin']);
   }

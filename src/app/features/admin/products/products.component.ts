@@ -50,8 +50,8 @@ import { BadgeComponent } from '../../../shared/components/badge/badge.component
                     <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-500 font-mono">{{ prod.idProducto.substring(0,8) }}</td>
                     <td class="px-6 py-4">
                       <div class="flex items-center">
-                        <div class="h-10 w-10 flex-shrink-0 bg-gray-100 rounded-lg overflow-hidden border border-gray-200">
-                          <img class="h-10 w-10 object-cover" [src]="prod.imagenUrl || 'https://images.unsplash.com/photo-1523275335684-37898b6baf30?ixlib=rb-4.0.3&auto=format&fit=crop&w=100&q=80'" alt="">
+                        <div class="h-10 w-10 flex-shrink-0 bg-gray-100 rounded-lg overflow-hidden border border-gray-200 flex items-center justify-center">
+                          <svg class="w-6 h-6 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 16l4.586-4.586a2 2 0 012.828 0L16 16m-2-2l1.586-1.586a2 2 0 012.828 0L20 14m-6-6h.01M6 20h12a2 2 0 002-2V6a2 2 0 00-2-2H6a2 2 0 00-2 2v12a2 2 0 002 2z"></path></svg>
                         </div>
                         <div class="ml-4">
                           <div class="text-sm font-bold text-gray-900">{{ prod.nombreProducto }}</div>
@@ -142,12 +142,6 @@ import { BadgeComponent } from '../../../shared/components/badge/badge.component
                       </div>
 
                       <div>
-                        <label class="block text-sm font-bold text-gray-700 mb-2">URL de Imagen</label>
-                        <input type="text" formControlName="imagenUrl" placeholder="https://ejemplo.com/imagen.jpg" class="block w-full border-gray-300 rounded-xl shadow-sm focus:border-indigo-500 focus:ring-indigo-500 sm:text-sm px-4 py-3 bg-gray-50 border">
-                        <p class="mt-1 text-xs text-gray-500 font-medium italic">Se recomienda una imagen para poder activar el producto.</p>
-                      </div>
-
-                      <div>
                         <label class="block text-sm font-bold text-gray-700 mb-2">Descripción</label>
                         <textarea formControlName="descripcion" rows="4" class="block w-full border-gray-300 rounded-xl shadow-sm focus:border-indigo-500 focus:ring-indigo-500 sm:text-sm px-4 py-3 bg-gray-50 border"></textarea>
                       </div>
@@ -191,8 +185,7 @@ export class AdminProductsComponent implements OnInit {
     descripcion: [''],
     precio: [0, [Validators.required, Validators.min(0.01)]],
     moneda: ['MXN', Validators.required],
-    idCategoria: ['', Validators.required],
-    imagenUrl: ['https://images.unsplash.com/photo-1523275335684-37898b6baf30?ixlib=rb-4.0.3&auto=format&fit=crop&w=500&q=80']
+    idCategoria: ['', Validators.required]
   });
 
   ngOnInit() {
@@ -218,8 +211,7 @@ export class AdminProductsComponent implements OnInit {
     this.isEditing.set(false);
     this.currentEditId = null;
     this.prodForm.reset({ 
-      moneda: 'MXN',
-      imagenUrl: 'https://images.unsplash.com/photo-1523275335684-37898b6baf30?ixlib=rb-4.0.3&auto=format&fit=crop&w=500&q=80'
+      moneda: 'MXN'
     });
   }
 
@@ -235,8 +227,7 @@ export class AdminProductsComponent implements OnInit {
       descripcion: prod.descripcion,
       precio: prod.precio,
       moneda: prod.moneda,
-      idCategoria: prod.idCategoria,
-      imagenUrl: prod.imagenUrl || 'https://images.unsplash.com/photo-1523275335684-37898b6baf30?ixlib=rb-4.0.3&auto=format&fit=crop&w=500&q=80'
+      idCategoria: prod.idCategoria
     });
     this.isModalOpen.set(true);
   }
