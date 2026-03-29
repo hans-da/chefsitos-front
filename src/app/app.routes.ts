@@ -15,57 +15,15 @@ export const routes: Routes = [
     loadComponent: () => import('./features/catalog/catalog.component').then(m => m.CatalogComponent)
   },
   {
-    path: 'productos/:id',
-    loadComponent: () => import('./features/product-detail/product-detail.component').then(m => m.ProductDetailComponent)
-  },
-  {
-    path: 'carrito',
-    loadComponent: () => import('./features/cart/cart.component').then(m => m.CartComponent)
-  },
-  {
-    path: 'checkout',
-    loadComponent: () => import('./features/checkout/checkout.component').then(m => m.CheckoutComponent)
-  },
-  {
-    path: 'mis-ordenes',
+    path: 'mis-ordenes', 
     loadComponent: () => import('./features/orders/orders.component').then(m => m.OrdersComponent)
   },
   {
-    path: 'mis-ordenes/:id',
-    loadComponent: () => import('./features/orders/order-detail/order-detail.component').then(m => m.OrderDetailComponent)
-  },
-  {
-    path: 'admin',
-    canActivate: [adminGuard],
-    children: [
-      {
-        path: '',
-        loadComponent: () => import('./features/admin/dashboard/dashboard.component').then(m => m.AdminDashboardComponent)
-      },
-      {
-        path: 'productos',
-        loadComponent: () => import('./features/admin/products/products.component').then(m => m.AdminProductsComponent)
-      },
-      {
-        path: 'categorias',
-        loadComponent: () => import('./features/admin/categories/categories.component').then(m => m.AdminCategoriesComponent)
-      },
-      {
-        path: 'ordenes',
-        loadComponent: () => import('./features/admin/orders/orders.component').then(m => m.AdminOrdersComponent)
-      }
-    ]
-  },
-  {
-    path: 'error',
-    loadComponent: () => import('./features/error/error.component').then(m => m.ErrorComponent)
-  },
-  {
-    path: '404',
-    loadComponent: () => import('./features/not-found/not-found.component').then(m => m.NotFoundComponent)
+    path: 'carrito', // Ruta para la Bolsita
+    loadComponent: () => import('./features/cart/cart.component').then(m => m.CartComponent)
   },
   {
     path: '**',
-    redirectTo: '404'
+    redirectTo: ''
   }
 ];

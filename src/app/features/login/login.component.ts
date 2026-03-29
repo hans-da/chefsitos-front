@@ -7,41 +7,54 @@ import { AuthService } from '../../core/services/auth.service';
   standalone: true,
   imports: [CommonModule],
   template: `
-    <div class="min-h-screen bg-gray-50 flex flex-col justify-center py-12 sm:px-6 lg:px-8 bg-cover bg-center relative" style="background-image: url('https://images.unsplash.com/photo-1556742049-0cfed4f6a45d?ixlib=rb-4.0.3&auto=format&fit=crop&w=2000&q=80');">
-      <div class="absolute inset-0 bg-gray-900/40 backdrop-blur-sm"></div>
+    <div class="min-h-screen bg-[#fafafa] flex flex-col justify-center py-12 sm:px-6 lg:px-8 relative overflow-hidden">
       
-      <div class="relative sm:mx-auto sm:w-full sm:max-w-md z-10">
-        <div class="mx-auto w-16 h-16 bg-white rounded-2xl flex items-center justify-center shadow-2xl shadow-indigo-500/50 mb-6 transform -rotate-3 hover:rotate-0 transition-transform">
-           <svg class="w-10 h-10 text-indigo-600" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M16 11V7a4 4 0 00-8 0v4M5 9h14l1 12H4L5 9z"></path></svg>
+      <div class="absolute top-0 left-0 w-full h-full z-0 overflow-hidden pointer-events-none">
+        <div class="absolute -top-[10%] -left-[10%] w-[40%] h-[40%] bg-indigo-50 rounded-full blur-[120px] opacity-60"></div>
+        <div class="absolute -bottom-[10%] -right-[10%] w-[40%] h-[40%] bg-emerald-50 rounded-full blur-[120px] opacity-60"></div>
+        <div class="absolute inset-0 opacity-[0.02]" style="background-image: url('data:image/svg+xml,%3Csvg width=\'30\' height=\'30\' viewBox=\'0 0 30 30\' fill=\'none\' xmlns=\'http://www.w3.org/2000/svg\'%3E%3Cpath d=\'M1.22676 0C1.91374 0 2.45351 0.539773 2.45351 1.22676C2.45351 1.91374 1.91374 2.45351 1.22676 2.45351C0.539773 2.45351 0 1.91374 0 1.22676C0 0.539773 0.539773 0 1.22676 0Z\' fill=\'black\'/%3E%3C/svg%3E');"></div>
+      </div>
+      
+      <div class="relative sm:mx-auto sm:w-full sm:max-w-md z-10 text-center px-4">
+        <div class="mx-auto w-16 h-16 bg-white rounded-[2rem] flex items-center justify-center shadow-2xl shadow-indigo-100 mb-10 transform hover:rotate-12 transition-transform duration-500">
+           <div class="w-10 h-10 bg-indigo-600 rounded-[1.2rem] flex items-center justify-center shadow-lg shadow-indigo-200">
+             <svg class="w-6 h-6 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M16 11V7a4 4 0 00-8 0v4M5 9h14l1 12H4L5 9z"></path></svg>
+           </div>
         </div>
-        <h2 class="mt-2 text-center text-4xl font-extrabold text-white tracking-tight">Bienvenido a UAMIShop</h2>
-        <p class="mt-3 text-center text-indigo-100 max-w-sm mx-auto">Selecciona el perfil con el que deseas ingresar a la plataforma (Simulación frontend).</p>
+        <h2 class="text-4xl font-black text-gray-900 tracking-tighter mb-2 italic">UAMI<span class="text-indigo-600">Shop</span></h2>
+        <p class="text-[11px] font-black text-gray-400 uppercase tracking-[0.4em] mb-12">Portal de Acceso • Chefsitos Team</p>
       </div>
 
-      <div class="mt-8 sm:mx-auto sm:w-full sm:max-w-md relative z-10">
-         <div class="bg-white/80 backdrop-blur-md py-10 px-6 shadow-2xl rounded-3xl sm:px-10 border border-white/40">
+      <div class="mt-2 sm:mx-auto sm:w-full sm:max-w-[400px] relative z-10 px-4">
+         <div class="bg-white/80 backdrop-blur-2xl py-12 px-10 shadow-[0_32px_64px_-12px_rgba(0,0,0,0.08)] rounded-[3rem] border border-white/50">
            
            <div class="space-y-6">
               <button 
                 (click)="loginCustomer()"
-                class="w-full flex justify-center py-4 px-4 border border-transparent rounded-2xl shadow-sm text-lg font-medium text-white bg-indigo-600 hover:bg-indigo-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500 transition-all transform hover:-translate-y-1 hover:shadow-lg">
-                Entrar como Cliente
+                class="group relative w-full flex items-center justify-between py-5 px-6 bg-gray-900 text-white font-black rounded-[1.8rem] hover:bg-indigo-600 transition-all duration-300 active:scale-[0.97] shadow-xl shadow-gray-200 overflow-hidden">
+                <div class="absolute inset-0 bg-gradient-to-r from-indigo-600 to-indigo-400 opacity-0 group-hover:opacity-100 transition-opacity duration-300"></div>
+                <span class="relative z-10 text-xs uppercase tracking-widest">Entrar como Cliente</span>
+                <svg class="relative z-10 w-5 h-5 group-hover:translate-x-1 transition-transform" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="3" d="M13 7l5 5m0 0l-5 5m5-5H6"></path></svg>
               </button>
               
-              <div class="relative">
-                <div class="absolute inset-0 flex items-center">
-                  <div class="w-full border-t border-gray-300"></div>
-                </div>
-                <div class="relative flex justify-center text-sm">
-                  <span class="px-2 bg-transparent text-gray-500 bg-white rounded-full leading-relaxed">O</span>
+              <div class="relative py-2">
+                <div class="absolute inset-0 flex items-center"><div class="w-full border-t border-gray-50"></div></div>
+                <div class="relative flex justify-center text-[10px] uppercase tracking-[0.3em] font-black text-gray-300">
+                  <span class="px-6 bg-white/0 backdrop-blur-none">Verificación</span>
                 </div>
               </div>
 
               <button 
                 (click)="loginAdmin()"
-                class="w-full flex justify-center py-4 px-4 border-2 border-indigo-600 rounded-2xl shadow-sm text-lg font-medium text-indigo-600 bg-transparent hover:bg-indigo-50 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500 transition-all transform hover:-translate-y-1">
-                Entrar como Administrador
+                class="group w-full flex items-center justify-between py-5 px-6 border-2 border-gray-50 text-gray-400 font-black rounded-[1.8rem] hover:border-indigo-100 hover:bg-indigo-50/30 hover:text-indigo-600 transition-all duration-300 active:scale-[0.97]">
+                <span class="text-xs uppercase tracking-widest">Acceso Administrativo</span>
+                <svg class="w-5 h-5 opacity-40 group-hover:opacity-100 group-hover:rotate-12 transition-all" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M10.325 4.317c.426-1.756 2.924-1.756 3.35 0a1.724 1.724 0 002.573 1.066c1.543-.94 3.31.826 2.37 2.37a1.724 1.724 0 001.065 2.572c1.756.426 1.756 2.924 0 3.35a1.724 1.724 0 00-1.066 2.573c.94 1.543-.826 3.31-2.37 2.37a1.724 1.724 0 00-2.572 1.065c-.426 1.756-2.924 1.756-3.35 0a1.724 1.724 0 00-2.573-1.066c-1.543.94-3.31-.826-2.37-2.37a1.724 1.724 0 00-1.065-2.572c-1.756-.426-1.756-2.924 0-3.35a1.724 1.724 0 001.066-2.573c-.94-1.543.826-3.31 2.37-2.37.996.608 2.296.07 2.572-1.065z"></path></svg>
               </button>
+           </div>
+           
+           <div class="mt-12 flex flex-col items-center gap-1">
+             <p class="text-[9px] font-black text-gray-300 uppercase tracking-[0.2em]">Ingeniería de Software</p>
+             <p class="text-[10px] font-bold text-indigo-200 italic">Unidad Iztapalapa</p>
            </div>
          </div>
       </div>
@@ -50,12 +63,6 @@ import { AuthService } from '../../core/services/auth.service';
 })
 export class LoginComponent {
   auth = inject(AuthService);
-
-  loginCustomer() {
-    this.auth.loginAsCustomer();
-  }
-
-  loginAdmin() {
-    this.auth.loginAsAdmin();
-  }
+  loginCustomer() { this.auth.loginAsCustomer(); }
+  loginAdmin() { this.auth.loginAsAdmin(); }
 }

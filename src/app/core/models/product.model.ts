@@ -7,6 +7,7 @@ export interface Product {
   disponible: boolean;
   fechaCreacion: string;
   idCategoria: string;
+  imagenUrl?: string; // 
 }
 
 export interface ProductStats {

@@ -1,14 +1,66 @@
-import { inject } from '@angular/core';
-import { CanActivateFn, Router } from '@angular/router';
-import { AuthService } from '../services/auth.service';
+import { Injectable, computed, signal } from '@angular/core';
+import { User } from '../models/user.model';
+import { Router } from '@angular/router';
 
-export const authGuard: CanActivateFn = (route, state) => {
-  const authService = inject(AuthService);
-  const router = inject(Router);
+export const TEST_CLIENT_ID = '3fa85f64-5717-4562-b3fc-2c963f66afa6';
 
-  if (authService.isAuthenticated()) {
-    return true;
+@Injectable({
+  providedIn: 'root'
+})
+export class AuthService {
+  private userSignal = signal<User | null>(this.getStoredUser());
+
+  currentUser = this.userSignal.asReadonly();
+  isAuthenticated = computed(() => this.userSignal() !== null);
+  isAdmin = computed(() => this.userSignal()?.role === 'ADMIN');
+  isCustomer = computed(() => this.userSignal()?.role === 'CUSTOMER');
+
+  constructor(private router: Router) {}
+
+  loginAsCustomer() {
+    // Añadido el campo email para cumplir con la interfaz User
+    const user: User = { 
+      id: TEST_CLIENT_ID, 
+      name: 'Cliente de Pruebas', 
+      email: 'cliente@uami.mx', 
+      role: 'CUSTOMER' 
+    };
+    this.setUser(user);
+    this.router.navigate(['/']);
   }
 
-  return router.createUrlTree(['/login']);
-};
+  loginAsAdmin() {
+    // Añadido el campo email para cumplir con la interfaz User
+    const user: User = { 
+      id: '742912a7-f5dc-461b-9d41-332308cf240e', 
+      name: 'Administrador Tienda', 
+      email: 'admin@uami.mx', 
+      role: 'ADMIN' 
+    };
+    this.setUser(user);
+    this.router.navigate(['/admin']);
+  }
+
+  logout() {
+    localStorage.removeItem('uamishop_user');
+    this.userSignal.set(null);
+    this.router.navigate(['/login']);
+  }
+
+  private setUser(user: User) {
+    localStorage.setItem('uamishop_user', JSON.stringify(user));
+    this.userSignal.set(user);
+  }
+
+  private getStoredUser(): User | null {
+    const data = localStorage.getItem('uamishop_user');
+    if (data) {
+      try {
+        return JSON.parse(data) as User;
+      } catch (e) {
+        return null;
+      }
+    }
+    return null;
+  }
+}

@@ -1,6 +1,7 @@
 import { Injectable, inject, signal, computed } from '@angular/core';
 import { HttpClient } from '@angular/common/http';
-import { Observable, tap, catchError, of, map } from 'rxjs';
+import { Observable, tap, catchError, of, map, switchMap } from 'rxjs'; // <-- Aquí agregué switchMap
+
 import { ApiService } from './api.service';
 import { Cart } from '../models/cart.model';
 import { AuthService } from './auth.service';
@@ -59,7 +60,7 @@ export class CartService {
     // Si no hay carrito o el estado no es ACTIVO, crear uno nuevo y luego agregar el producto
     if (!current || current.estado !== 'ACTIVO') {
       return this.createCart(clientId).pipe(
-        switchMap(newCart => 
+        switchMap((newCart: any) => //
           this.http.post<Cart>(this.api.getSalesUrl(`/api/v1/carritos/${newCart.carritoId}/productos`), { productoId, cantidad })
         ),
         tap(cart => this.cartSignal.set(cart))

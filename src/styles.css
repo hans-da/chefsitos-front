@@ -1,3 +1,71 @@
-/* You can add global styles to this file, and also import other style files */
-
+/* --- CONFIGURACIÓN DE TAILWIND V4 PARA UAMISHOP --- */
 @import 'tailwindcss';
+
+@theme {
+  --color-indigo-50: #f0fdf4;
+  --color-indigo-100: #dcfce7;
+  --color-indigo-200: #bbf7d0;
+  --color-indigo-300: #86efac;
+  --color-indigo-400: #4ade80;
+  --color-indigo-500: #22c55e;
+  --color-indigo-600: #006341; 
+  --color-indigo-700: #004a31; 
+  --color-indigo-800: #065f46;
+  --color-indigo-900: #002d1e;
+  --color-indigo-950: #022c22;
+}
+
+/* --- ANIMACIONES Y EFECTOS --- */
+@keyframes fadeInSlideUp {
+  from { opacity: 0; transform: translateY(20px); }
+  to { opacity: 1; transform: translateY(0); }
+}
+.animate-in { animation: fadeInSlideUp 0.6s ease-out forwards; }
+
+.backdrop-blur-xl {
+  backdrop-filter: blur(24px) !important;
+  -webkit-backdrop-filter: blur(24px) !important;
+  background-color: rgba(255, 255, 255, 0.7) !important;
+  border-bottom: 1px solid rgba(0,0,0,0.05);
+}
+
+/* --- DISEÑO DE FONDO --- */
+.from-indigo-900, .to-purple-900, .via-slate-900,
+[class*="from-indigo-"], [class*="to-purple-"] {
+    background-color: #fafafa !important; 
+    background-image: 
+        linear-gradient(to right, #f0f0f0 1px, transparent 1px),
+        linear-gradient(to bottom, #f0f0f0 1px, transparent 1px) !important;
+    background-size: 30px 30px !important;
+}
+
+section, .relative.overflow-hidden { background-color: transparent !important; }
+
+/* --- TIPOGRAFÍA Y COLORES CRÍTICOS --- */
+h1.text-white { color: #171717 !important; text-shadow: none !important; }
+p.text-gray-300, p.text-indigo-200, p { color: #525252 !important; }
+
+/* Asegura que "SHOP" sea verde */
+.text-indigo-600, [class*="text-indigo-600"] { 
+    color: #006341 !important; 
+    text-shadow: none !important; 
+}
+
+/* --- REFUERZO BOTÓN DESTACADOS--- */
+.border-white\/20, [class*="border-white/"] {
+    background-color: #171717 !important; /* Gris carbón profundo */
+    color: #f5f5f5 !important;
+    border-color: #171717 !important;
+    border-radius: 9999px !important;
+    font-weight: 500;
+    transition: all 0.3s ease-out;
+    cursor: pointer;
+    box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1);
+    padding: 0.75rem 1.5rem; /* Ajuste de tamaño  */
+}
+
+.border-white\/20:hover, [class*="border-white/"]:hover {
+    background-color: #262626 !important;
+    box-shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.2);
+    transform: translateY(-1px);
+}

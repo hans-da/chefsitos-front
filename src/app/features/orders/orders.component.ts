@@ -1,6 +1,8 @@
 import { Component, inject, OnInit, signal } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { RouterModule } from '@angular/router';
+import { of } from 'rxjs';
+import { catchError } from 'rxjs/operators';
 import { OrderService } from '../../core/services/order.service';
 import { AuthService } from '../../core/services/auth.service';
 import { Order } from '../../core/models/order.model';
@@ -34,7 +36,7 @@ import { FooterComponent } from '../../shared/components/footer/footer.component
               <svg class="w-12 h-12 text-indigo-400" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 11H5m14 0a2 2 0 012 2v6a2 2 0 01-2 2H5a2 2 0 01-2-2v-6a2 2 0 012-2m14 0V9a2 2 0 00-2-2M5 11V9a2 2 0 002-2m0 0V5a2 2 0 012-2h6a2 2 0 012 2v2M7 7h10"></path></svg>
             </div>
             <h3 class="text-2xl font-bold text-gray-900 mb-3">Aún no tienes órdenes</h3>
-            <p class="text-gray-500 mb-8 max-w-sm">No hemos encontrado compras recientes en tu historial. ¡Empieza a llenar tu carrito!</p>
+            <p class="text-gray-500 mb-8 max-w-sm">No hemos encontrado compras recientes en tu historial o el servidor no está disponible. ¡Empieza a llenar tu carrito!</p>
             <a routerLink="/catalogo" class="px-8 py-3 bg-indigo-600 text-white rounded-xl font-bold hover:bg-indigo-700 shadow-lg shadow-indigo-600/30 transition-all transform hover:-translate-y-1">
               Ir al catálogo
             </a>
@@ -86,12 +88,14 @@ export class OrdersComponent implements OnInit {
   }
 
   loadOrders() {
-    this.orderService.getOrders().subscribe({
+    this.orderService.getOrders().pipe(
+      // Si el backend falla, devolvemos un arreglo vacío
+      catchError(() => of([]))
+    ).subscribe({
       next: (allOrders) => {
-        // User client-side filtering per prompt instruction
         const clientId = this.auth.currentUser()?.id;
         const userOrders = allOrders.filter(o => o.clienteId === clientId);
-        // Sort descending by id roughly (or could be dates if present)
+        
         userOrders.reverse();
         this.orders.set(userOrders);
         this.loading.set(false);
