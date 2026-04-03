@@ -28,11 +28,11 @@ import { RouterModule } from '@angular/router';
         </p>
 
         <div class="flex gap-6 justify-center">
-          <a routerLink="/catalogo" class="px-10 py-5 bg-indigo-600 text-white rounded-3xl font-black hover:scale-105 transition-all">
+          <a routerLink="/catalogo" class="px-10 py-5 bg-indigo-600 text-white rounded-3xl font-black hover:scale-105 transition-all text-sm uppercase tracking-widest">
             Explorar
           </a>
 
-          <a routerLink="/destacados" class="px-10 py-5 border border-white/20 text-white rounded-3xl hover:bg-white/10 transition-all">
+          <a routerLink="/destacados" class="px-10 py-5 border-2 border-white/30 text-white rounded-3xl font-black hover:bg-white/10 hover:scale-105 transition-all text-sm uppercase tracking-widest">
             Destacados
           </a>
         </div>

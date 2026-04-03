@@ -14,15 +14,20 @@ Bienvenido al frontend de **Chefsitos**, una plataforma de comercio electrónico
 
 ---
 
-## Arquitectura de Microservicios
+## Arquitectura de Microservicios 
 
-El frontend consume directamente los siguientes microservicios reales a través de un proxy inverso configurado en Nginx:
+El Frontend de **Chefsitos** adopta una política de seguridad estricta y ruteo centralizado llamado **Flujo Cerrado**. 
+ESTÁ ESTRICTAMENTE PROHIBIDO (y deshabilitado por diseño) que el Frontend se comunique directamente con los microservicios individuales (8081, 8082, 8083). Todo debe pasar a través del **API Gateway**.
 
-- **Catálogo API** (Port 8081): Gestión de productos y categorías.
-- **Órdenes API** (Port 8082): Ciclo de vida completo del pedido.
-- **Ventas API** (Port 8083): Gestión del carrito de compras.
+**Flujo de Comunicación Oficial:**
+`Frontend (UI) --> API Gateway (localhost:8080) --> Sistema Interno de Microservicios`
 
-> **Nota de Alineación**: Se han eliminado todos los mocks. Los payloads de las peticiones (ej. `nuevaCantidad` en carrito, transiciones de estado en órdenes) coinciden 100% con los contratos del backend.
+- **API Gateway (Port 8080)**: Único punto de acceso al clúster de backend para resolver:
+  - Rutas de `/api/v1/productos` & `/api/v1/categorias` (Catálogo API)
+  - Rutas de `/api/v1/ordenes` (Órdenes API)
+  - Rutas de `/api/v1/carritos` (Ventas API)
+
+En el marco de desarrollo, Angular realiza este mapeo automáticamente usando `proxy.conf.json`. Para Nginx (producción dockerizada), ver `nginx.conf`. Las URL base no se harcodean.
 
 ---
 

@@ -1,6 +1,6 @@
 import { Injectable, inject, signal, computed } from '@angular/core';
 import { HttpClient } from '@angular/common/http';
-import { Observable, tap, catchError, of, map, switchMap } from 'rxjs'; // <-- Aquí agregué switchMap
+import { Observable, tap, catchError, of, map, switchMap, throwError } from 'rxjs'; // <-- throwError importado
 
 import { ApiService } from './api.service';
 import { Cart } from '../models/cart.model';
@@ -53,7 +53,7 @@ export class CartService {
 
   addProduct(productoId: string, cantidad: number): Observable<Cart> {
     const clientId = this.auth.currentUser()?.id;
-    if (!clientId) throw new Error('Usuario no autenticado');
+    if (!clientId) return throwError(() => new Error('Usuario no autenticado'));
 
     const current = this.cartSignal();
     
@@ -75,7 +75,7 @@ export class CartService {
 
   updateQuantity(productoId: string, cantidad: number): Observable<Cart> {
     const current = this.cartSignal();
-    if (!current) throw new Error('No hay carrito activo');
+    if (!current) return throwError(() => new Error('No hay carrito activo'));
 
     return this.http.patch<Cart>(this.api.getSalesUrl(`/api/v1/carritos/${current.carritoId}/productos/${productoId}`), { nuevaCantidad: cantidad }).pipe(
       tap(cart => this.cartSignal.set(cart))
@@ -84,7 +84,7 @@ export class CartService {
 
   removeProduct(productoId: string): Observable<Cart> {
     const current = this.cartSignal();
-    if (!current) throw new Error('No hay carrito activo');
+    if (!current) return throwError(() => new Error('No hay carrito activo'));
 
     return this.http.delete<Cart>(this.api.getSalesUrl(`/api/v1/carritos/${current.carritoId}/productos/${productoId}`)).pipe(
       tap(cart => this.cartSignal.set(cart))
@@ -93,7 +93,7 @@ export class CartService {
 
   clearCart(): Observable<Cart> {
     const current = this.cartSignal();
-    if (!current) throw new Error('No hay carrito activo');
+    if (!current) return throwError(() => new Error('No hay carrito activo'));
 
     return this.http.delete<Cart>(this.api.getSalesUrl(`/api/v1/carritos/${current.carritoId}/productos`)).pipe(
       tap(cart => this.cartSignal.set(cart))
@@ -102,7 +102,7 @@ export class CartService {
 
   startCheckout(): Observable<Cart> {
     const current = this.cartSignal();
-    if (!current) throw new Error('No hay carrito activo');
+    if (!current) return throwError(() => new Error('No hay carrito activo'));
 
     return this.http.post<Cart>(this.api.getSalesUrl(`/api/v1/carritos/${current.carritoId}/checkout`), {}).pipe(
       tap(cart => {
@@ -113,7 +113,7 @@ export class CartService {
 
   completeCheckout(): Observable<Cart> {
     const current = this.cartSignal();
-    if (!current) throw new Error('No hay carrito activo');
+    if (!current) return throwError(() => new Error('No hay carrito activo'));
 
     return this.http.post<Cart>(this.api.getSalesUrl(`/api/v1/carritos/${current.carritoId}/checkout/completar`), {}).pipe(
       tap(() => this.clearLocalCart())
@@ -122,7 +122,7 @@ export class CartService {
 
   abandonCart(): Observable<Cart> {
     const current = this.cartSignal();
-    if (!current) throw new Error('No hay carrito activo');
+    if (!current) return throwError(() => new Error('No hay carrito activo'));
 
     return this.http.post<Cart>(this.api.getSalesUrl(`/api/v1/carritos/${current.carritoId}/abandonar`), {}).pipe(
       tap(() => this.clearLocalCart())

@@ -176,8 +176,8 @@ export class AdminOrdersComponent implements OnInit {
   cancelOrder(id: string) {
     const motivo = prompt('Por favor, ingresa el motivo de la cancelación:');
     if (motivo) {
-      if (motivo.length < 5) {
-        this.notification.error('El motivo es demasiado corto');
+      if (motivo.length < 10) {
+        this.notification.error('El motivo debe tener al menos 10 caracteres');
         return;
       }
       this.orderService.cancelOrder(id, motivo).subscribe({

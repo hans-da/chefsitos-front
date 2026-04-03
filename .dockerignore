@@ -1,0 +1,10 @@
+node_modules
+dist
+.angular
+.git
+.vscode
+.vscode-test
+.idea
+*.log
+*.lock
+coverage

@@ -15,12 +15,28 @@ export const routes: Routes = [
     loadComponent: () => import('./features/catalog/catalog.component').then(m => m.CatalogComponent)
   },
   {
-    path: 'mis-ordenes', 
+    path: 'destacados',
+    loadComponent: () => import('./features/catalog/catalog.component').then(m => m.CatalogComponent)
+  },
+  {
+    path: 'productos/:id',
+    loadComponent: () => import('./features/product-detail/product-detail.component').then(m => m.ProductDetailComponent)
+  },
+  {
+    path: 'carrito',
+    loadComponent: () => import('./features/cart/cart.component').then(m => m.CartComponent)
+  },
+  {
+    path: 'checkout',
+    loadComponent: () => import('./features/checkout/checkout.component').then(m => m.CheckoutComponent)
+  },
+  {
+    path: 'mis-ordenes',
     loadComponent: () => import('./features/orders/orders.component').then(m => m.OrdersComponent)
   },
   {
-    path: 'carrito', // Ruta para la Bolsita
-    loadComponent: () => import('./features/cart/cart.component').then(m => m.CartComponent)
+    path: 'mis-ordenes/:id',
+    loadComponent: () => import('./features/orders/order-detail/order-detail.component').then(m => m.OrderDetailComponent)
   },
   {
     path: 'admin',
@@ -35,6 +51,6 @@ export const routes: Routes = [
   },
   {
     path: '**',
-    redirectTo: ''
+    loadComponent: () => import('./features/not-found/not-found.component').then(m => m.NotFoundComponent)
   }
 ];

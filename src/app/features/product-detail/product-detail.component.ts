@@ -176,7 +176,11 @@ export class ProductDetailComponent implements OnInit {
       const qty = this.addToCartForm.value.quantity || 1;
       this.cartService.addProduct(prod.idProducto, qty).subscribe({
         next: () => this.notification.success(`¡Listo! ${qty} ${prod.nombreProducto} al carrito`),
-        error: () => this.notification.error('Inicia sesión para ordenar')
+        error: (err) => {
+          if (err && err.message === 'Usuario no autenticado') {
+            this.notification.error('Inicia sesión para ordenar');
+          }
+        }
       });
     }
   }
