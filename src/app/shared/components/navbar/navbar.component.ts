@@ -19,7 +19,7 @@ import { CartService } from '../../../core/services/cart.service';
         <div class="flex justify-between h-20 items-center">
           
           <a routerLink="/" class="flex items-center gap-3 group relative">
-            <div class="w-24 h-24 flex items-center justify-center transform group-hover:scale-110 group-hover:-rotate-3 transition-all duration-500 relative -mb-6 drop-shadow-2xl">
+            <div class="w-16 h-16 flex items-center justify-center transform group-hover:scale-110 group-hover:-rotate-3 transition-all duration-500 relative drop-shadow-2xl">
               <img src="images/logo-chefsitos.png" 
                    alt="Team Chefsitos" 
                    class="w-full h-full object-contain">
@@ -63,6 +63,9 @@ import { CartService } from '../../../core/services/cart.service';
                       <p class="text-[8px] font-black text-gray-400 uppercase tracking-widest">{{ auth.currentUser()?.role }}</p>
                       <p class="text-xs font-black text-gray-900 truncate tracking-tight">{{ auth.currentUser()?.email }}</p>
                     </div>
+                    @if (auth.isAdmin()) {
+                      <a routerLink="/admin" (click)="dropdownOpen.set(false)" class="flex items-center gap-3 px-4 py-3 text-[10px] font-black uppercase tracking-widest text-indigo-600 hover:bg-indigo-50 rounded-xl transition-all mb-1 border-b border-gray-50">Panel Admin</a>
+                    }
                     <a routerLink="/mis-ordenes" (click)="dropdownOpen.set(false)" class="flex items-center gap-3 px-4 py-3 text-[10px] font-black uppercase tracking-widest text-gray-600 hover:bg-indigo-50 hover:text-indigo-600 rounded-xl transition-all">Mis Pedidos</a>
                     <button (click)="logout()" class="w-full flex items-center gap-3 px-4 py-3 text-[10px] font-black uppercase tracking-widest text-red-400 hover:bg-red-50 rounded-xl transition-all border-t border-gray-50 mt-2 pt-4 italic">Cerrar Sesión</button>
                   </div>

@@ -1,6 +1,6 @@
 import { Injectable, inject } from '@angular/core';
 import { HttpClient } from '@angular/common/http';
-import { Observable } from 'rxjs';
+import { Observable, catchError, of } from 'rxjs';
 import { ApiService } from './api.service';
 import { Product, ProductStats } from '../models/product.model';
 
@@ -12,7 +12,12 @@ export class CatalogService {
   private api = inject(ApiService);
 
   getProducts(): Observable<Product[]> {
-    return this.http.get<Product[]>(this.api.getCatalogUrl('/api/v1/productos'));
+    return this.http.get<Product[]>(this.api.getCatalogUrl('/api/v1/productos')).pipe(
+      catchError(err => {
+        console.error('Error cargando productos:', err);
+        return of([]);
+      })
+    );
   }
 
   getProductById(id: string): Observable<Product> {
@@ -34,6 +39,7 @@ export class CatalogService {
   updateProduct(id: string, data: Partial<Product>): Observable<Product> {
     return this.http.patch<Product>(this.api.getCatalogUrl(`/api/v1/productos/${id}`), data);
   }
+
 
   activateProduct(id: string): Observable<Product> {
     return this.http.post<Product>(this.api.getCatalogUrl(`/api/v1/productos/${id}/activar`), {});

@@ -110,7 +110,6 @@ export class OrdersComponent implements OnInit {
     switch(estado) {
       case 'ENTREGADA': return 'success';
       case 'CANCELADA': return 'danger';
-      case 'EN_TRANSITO':
       case 'ENVIADA': return 'info';
       case 'EN_PREPARACION':
       case 'PAGO_PROCESADO': return 'warning';

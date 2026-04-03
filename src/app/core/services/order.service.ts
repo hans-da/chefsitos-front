@@ -1,6 +1,6 @@
 import { Injectable, inject } from '@angular/core';
 import { HttpClient } from '@angular/common/http';
-import { Observable } from 'rxjs';
+import { Observable, catchError, of } from 'rxjs';
 import { ApiService } from './api.service';
 import { Order, Address } from '../models/order.model';
 import { CartItem } from '../models/cart.model';
@@ -14,7 +14,12 @@ export class OrderService {
 
   getOrders(): Observable<Order[]> {
     // API does not filter by user, we fetch all and frontend will filter (per prompt instructions).
-    return this.http.get<Order[]>(this.api.getOrdersUrl('/api/v1/ordenes'));
+    return this.http.get<Order[]>(this.api.getOrdersUrl('/api/v1/ordenes')).pipe(
+      catchError(err => {
+        console.error('Error cargando órdenes (posible fallo de red o gateway):', err);
+        return of([]); // Devolvemos lista vacía para no romper el dashboard
+      })
+    );
   }
 
   getOrderById(id: string): Observable<Order> {

@@ -63,7 +63,7 @@ import { BadgeComponent } from '../../../shared/components/badge/badge.component
                         <button (click)="markAsSent(order.id)" class="text-purple-600 hover:text-purple-900 bg-purple-50 hover:bg-purple-100 px-3 py-1 rounded-lg transition-colors">Enviar</button>
                       }
 
-                      @if (order.estado === 'ENVIADA' || order.estado === 'EN_TRANSITO') {
+                      @if (order.estado === 'ENVIADA') {
                         <button (click)="markAsDelivered(order.id)" class="text-green-600 hover:text-green-900 bg-green-50 hover:bg-green-100 px-3 py-1 rounded-lg transition-colors">Entregada</button>
                       }
 
@@ -113,7 +113,6 @@ export class AdminOrdersComponent implements OnInit {
       case 'PAGO_PROCESADO': return 'success';
       case 'EN_PREPARACION': return 'info';
       case 'ENVIADA': return 'info';
-      case 'EN_TRANSITO': return 'info';
       case 'ENTREGADA': return 'success';
       case 'CANCELADA': return 'danger';
       default: return 'neutral';

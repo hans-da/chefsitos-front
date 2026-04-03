@@ -1,6 +1,6 @@
 export type OrderStatus =
   'PENDIENTE' | 'CONFIRMADA' | 'PAGO_PROCESADO' |
-  'EN_PREPARACION' | 'ENVIADA' | 'EN_TRANSITO' |
+  'EN_PREPARACION' | 'ENVIADA' |
   'ENTREGADA' | 'CANCELADA';
 
 export interface Order {

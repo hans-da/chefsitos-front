@@ -1,6 +1,6 @@
 import { Injectable, inject } from '@angular/core';
 import { HttpClient } from '@angular/common/http';
-import { Observable } from 'rxjs';
+import { Observable, catchError, of } from 'rxjs';
 import { ApiService } from './api.service';
 import { Category } from '../models/category.model';
 
@@ -12,7 +12,12 @@ export class CategoryService {
   private api = inject(ApiService);
 
   getCategories(): Observable<Category[]> {
-    return this.http.get<Category[]>(this.api.getCatalogUrl('/api/v1/categorias'));
+    return this.http.get<Category[]>(this.api.getCatalogUrl('/api/v1/categorias')).pipe(
+      catchError(err => {
+        console.error('Error cargando categorías:', err);
+        return of([]);
+      })
+    );
   }
 
   getCategoryById(id: string): Observable<Category> {

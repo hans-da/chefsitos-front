@@ -61,7 +61,8 @@
               "buildTarget": "chefsitos-front:build:production"
             },
             "development": {
-              "buildTarget": "chefsitos-front:build:development"
+              "buildTarget": "chefsitos-front:build:development",
+              "proxyConfig": "proxy.conf.json"
             }
           },
           "defaultConfiguration": "development"

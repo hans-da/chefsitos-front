@@ -76,14 +76,6 @@ import { FooterComponent } from '../../../shared/components/footer/footer.compon
 
                       <!-- Step 4 -->
                       <div class="flex flex-row sm:flex-col items-center gap-4 sm:gap-2">
-                        <div class="w-10 h-10 rounded-full flex items-center justify-center font-bold shadow-md transition-colors" [ngClass]="getStepClass('EN_TRANSITO')">
-                           4
-                        </div>
-                        <span class="text-sm font-medium text-gray-700">En Tránsito</span>
-                      </div>
-
-                      <!-- Step 5 -->
-                      <div class="flex flex-row sm:flex-col items-center gap-4 sm:gap-2">
                         <div class="w-10 h-10 rounded-full flex items-center justify-center font-bold shadow-md transition-colors" [ngClass]="getStepClass('ENTREGADA')">
                            <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7"></path></svg>
                         </div>
@@ -174,7 +166,7 @@ export class OrderDetailComponent implements OnInit {
   cancelReason = '';
 
   // Ordered steps logically representing progression
-  private readonly stepLogic = ['PENDIENTE', 'CONFIRMADA', 'PAGO_PROCESADO', 'EN_PREPARACION', 'ENVIADA', 'EN_TRANSITO', 'ENTREGADA'];
+  private readonly stepLogic = ['PENDIENTE', 'CONFIRMADA', 'PAGO_PROCESADO', 'EN_PREPARACION', 'ENVIADA', 'ENTREGADA'];
 
   ngOnInit() {
     this.route.paramMap.subscribe(params => {
@@ -206,8 +198,8 @@ export class OrderDetailComponent implements OnInit {
   canCancel(): boolean {
     const estado = this.order()?.estado;
     if (!estado) return false;
-    // Cannot cancel if ENVIADA, EN_TRANSITO, ENTREGADA, or already CANCELADA
-    return !['ENVIADA', 'EN_TRANSITO', 'ENTREGADA', 'CANCELADA'].includes(estado);
+    // Cannot cancel if ENVIADA, ENTREGADA, or already CANCELADA
+    return !['ENVIADA', 'ENTREGADA', 'CANCELADA'].includes(estado);
   }
 
   executeCancelation() {
@@ -228,17 +220,15 @@ export class OrderDetailComponent implements OnInit {
   getStepperProgress(): number {
     const estado = this.order()?.estado || 'PENDIENTE';
     const idx = Math.max(0, this.stepLogic.indexOf(estado));
-    // Mapping steps visually (we show 5 steps: CONFIRMADA(0), EN_PREP(1), ENVIADA(2), EN_TRANSITO(3), ENTREGADA(4))
-    // Let's normalize it to the 5 visual steps depending on string
+    // Mapping steps visually (we show 4 steps: CONFIRMADA(0), EN_PREP(1), ENVIADA(2), ENTREGADA(3))
     let visualStep = 0;
     if (idx >= this.stepLogic.indexOf('CONFIRMADA')) visualStep = 0;
     if (idx >= this.stepLogic.indexOf('PAGO_PROCESADO')) visualStep = 0.5; // halfway
     if (idx >= this.stepLogic.indexOf('EN_PREPARACION')) visualStep = 1;
     if (idx >= this.stepLogic.indexOf('ENVIADA')) visualStep = 2;
-    if (idx >= this.stepLogic.indexOf('EN_TRANSITO')) visualStep = 3;
-    if (idx >= this.stepLogic.indexOf('ENTREGADA')) visualStep = 4;
+    if (idx >= this.stepLogic.indexOf('ENTREGADA')) visualStep = 3;
 
-    return (visualStep / 4) * 100;
+    return (visualStep / 3) * 100;
   }
 
   getStepClass(targetStep: OrderStatus): string {
@@ -260,7 +250,6 @@ export class OrderDetailComponent implements OnInit {
     switch(estado) {
       case 'ENTREGADA': return 'success';
       case 'CANCELADA': return 'danger';
-      case 'EN_TRANSITO':
       case 'ENVIADA': return 'info';
       case 'EN_PREPARACION':
       case 'PAGO_PROCESADO': return 'warning';

@@ -23,6 +23,17 @@ export const routes: Routes = [
     loadComponent: () => import('./features/cart/cart.component').then(m => m.CartComponent)
   },
   {
+    path: 'admin',
+    canActivate: [adminGuard],
+    children: [
+      { path: '', redirectTo: 'dashboard', pathMatch: 'full' },
+      { path: 'dashboard', loadComponent: () => import('./features/admin/dashboard/dashboard.component').then(m => m.AdminDashboardComponent) },
+      { path: 'productos', loadComponent: () => import('./features/admin/products/products.component').then(m => m.AdminProductsComponent) },
+      { path: 'categorias', loadComponent: () => import('./features/admin/categories/categories.component').then(m => m.AdminCategoriesComponent) },
+      { path: 'ordenes', loadComponent: () => import('./features/admin/orders/orders.component').then(m => m.AdminOrdersComponent) }
+    ]
+  },
+  {
     path: '**',
     redirectTo: ''
   }

@@ -111,6 +111,24 @@ export class CartService {
     );
   }
 
+  completeCheckout(): Observable<Cart> {
+    const current = this.cartSignal();
+    if (!current) throw new Error('No hay carrito activo');
+
+    return this.http.post<Cart>(this.api.getSalesUrl(`/api/v1/carritos/${current.carritoId}/checkout/completar`), {}).pipe(
+      tap(() => this.clearLocalCart())
+    );
+  }
+
+  abandonCart(): Observable<Cart> {
+    const current = this.cartSignal();
+    if (!current) throw new Error('No hay carrito activo');
+
+    return this.http.post<Cart>(this.api.getSalesUrl(`/api/v1/carritos/${current.carritoId}/abandonar`), {}).pipe(
+      tap(() => this.clearLocalCart())
+    );
+  }
+
   clearLocalCart() {
     this.cartSignal.set(null);
     localStorage.removeItem('uamishop_cart_id');

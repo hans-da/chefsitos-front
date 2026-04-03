@@ -8,19 +8,19 @@ export class ApiService {
   
   getCatalogUrl(path: string): string {
     return environment.useGateway 
-      ? `${environment.apiUrl}/catalog${path}`
+      ? `${environment.apiUrl}${path}`
       : `${environment.catalogApiUrl}${path}`;
   }
 
   getOrdersUrl(path: string): string {
     return environment.useGateway 
-      ? `${environment.apiUrl}/orders${path}`
+      ? `${environment.apiUrl}${path}`
       : `${environment.ordersApiUrl}${path}`;
   }
 
   getSalesUrl(path: string): string {
     return environment.useGateway 
-      ? `${environment.apiUrl}/sales${path}`
+      ? `${environment.apiUrl}${path}`
       : `${environment.salesApiUrl}${path}`;
   }
 }

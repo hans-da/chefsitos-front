@@ -1,7 +1,7 @@
 export const environment = {
   production: false,
-  useGateway: false,
-  apiUrl: '/api',
+  useGateway: true,
+  apiUrl: '',
   catalogApiUrl: '/catalog-api',
   ordersApiUrl: '/orders-api',
   salesApiUrl: '/sales-api'
