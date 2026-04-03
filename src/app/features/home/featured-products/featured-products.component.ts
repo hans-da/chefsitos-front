@@ -12,11 +12,13 @@ import { ProductCardComponent } from '../../../shared/components/product-card/pr
   template: `
     <section class="bg-white py-20 px-6">
       <div class="max-w-6xl mx-auto">
-        <div class="flex justify-between items-end mb-12">
-          <h2 class="text-4xl font-black uppercase tracking-tighter">Destacados</h2>
-          <a routerLink="/catalogo" class="text-indigo-600 font-bold text-sm hover:text-indigo-800 transition-colors flex items-center gap-1">
-            Ver todos
-            <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7"></path></svg>
+        <div class="flex flex-col md:flex-row justify-between items-start md:items-end mb-16 gap-4">
+          <div>
+            <span class="text-[10px] font-black text-emerald-600 uppercase tracking-[0.4em] mb-4 block">Selección Especial</span>
+            <h2 class="text-6xl font-black tracking-tighter text-[#1a1a1a] uppercase italic">Productos <span class="text-emerald-500">Destacados</span></h2>
+          </div>
+          <a routerLink="/catalogo" class="px-8 py-3 bg-gray-50 text-gray-900 border border-gray-100 rounded-xl font-black text-[10px] uppercase tracking-widest hover:bg-emerald-600 hover:text-white transition-all shadow-sm">
+            Ver catálogo completo
           </a>
         </div>
         @if (loading()) {

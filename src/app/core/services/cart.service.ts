@@ -57,17 +57,59 @@ export class CartService {
 
     const current = this.cartSignal();
     
-    // Si no hay carrito o el estado no es ACTIVO, crear uno nuevo y luego agregar el producto
+    //  INTERCEPCIÓN MOCK: Si es el producto de prueba, no llamamos al servidor
+    if (productoId === '11111111-1111-1111-1111-111111111111') {
+      const mockCart: Cart = current || {
+        carritoId: 'mock-cart-1111',
+        clienteId: clientId,
+        estado: 'ACTIVO',
+        items: [],
+        descuentos: [],
+        subtotal: 0,
+        total: 0,
+        moneda: 'MXN'
+      };
+
+      const items = [...mockCart.items];
+      const existingItemIndex = items.findIndex(i => i.productoId === productoId);
+      const precioUnitario = 150.50;
+
+      if (existingItemIndex >= 0) {
+        const item = items[existingItemIndex];
+        items[existingItemIndex] = { 
+          ...item, 
+          cantidad: item.cantidad + cantidad,
+          subtotal: (item.cantidad + cantidad) * precioUnitario
+        };
+      } else {
+        items.push({
+          productoId: productoId,
+          nombreProducto: 'Producto Mock (Activado)',
+          cantidad: cantidad,
+          sku: 'MOCK-SKU',
+          precioUnitario: precioUnitario,
+          subtotal: cantidad * precioUnitario,
+          moneda: 'MXN'
+        });
+      }
+
+      const totalAmount = items.reduce((sum, i) => sum + i.subtotal, 0);
+      const updatedCart: Cart = { ...mockCart, items, subtotal: totalAmount, total: totalAmount };
+      
+      this.cartSignal.set(updatedCart);
+      return of(updatedCart);
+    }
+
+    // Lógica normal para productos reales
     if (!current || current.estado !== 'ACTIVO') {
       return this.createCart(clientId).pipe(
-        switchMap((newCart: any) => //
+        switchMap((newCart: any) => 
           this.http.post<Cart>(this.api.getSalesUrl(`/api/v1/carritos/${newCart.carritoId}/productos`), { productoId, cantidad })
         ),
         tap(cart => this.cartSignal.set(cart))
       );
     }
 
-    // Si ya existe un carrito activo, agregar directamente
     return this.http.post<Cart>(this.api.getSalesUrl(`/api/v1/carritos/${current.carritoId}/productos`), { productoId, cantidad }).pipe(
       tap(cart => this.cartSignal.set(cart))
     );

@@ -5,8 +5,12 @@ import { CategoryService } from '../../../core/services/category.service';
 import { Category } from '../../../core/models/category.model';
 
 const CATEGORY_COLORS = [
-  'bg-indigo-600', 'bg-purple-600', 'bg-teal-600',
-  'bg-rose-600', 'bg-amber-600', 'bg-sky-600'
+  'from-[#006341] to-[#004d32]', // Deep Emerald
+  'from-[#50E38F] to-[#006341]', // Bright Emerald to Deep
+  'from-[#121212] to-[#333333]', // Dark Matte
+  'from-[#004d32] to-[#121212]', // Dark Green to Black
+  'from-[#84f0b1] to-[#50E38F]', // Light Mint to Bright
+  'from-[#1a1a1a] to-[#006341]'  // Black to Emerald
 ];
 
 @Component({
@@ -14,17 +18,23 @@ const CATEGORY_COLORS = [
   standalone: true,
   imports: [CommonModule, RouterModule],
   template: `
-    <section class="bg-gray-900 text-white py-20 px-6">
-      <div class="max-w-6xl mx-auto">
+    <section class="bg-white py-24 px-6 relative overflow-hidden">
+      <!-- Decorative background element -->
+      <div class="absolute -top-24 -right-24 w-96 h-96 bg-emerald-50 rounded-full blur-[120px] opacity-50"></div>
+      
+      <div class="max-w-6xl mx-auto relative z-10">
         
-        <h2 class="text-4xl font-black mb-12">
-          ¿Qué estás buscando?
-        </h2>
+        <div class="flex flex-col mb-16">
+          <span class="text-[10px] font-black text-emerald-600 uppercase tracking-[0.4em] mb-4">Explora por Categoría</span>
+          <h2 class="text-6xl font-black tracking-tighter text-[#1a1a1a] uppercase italic">
+            ¿Qué estás <span class="text-emerald-500">buscando</span>?
+          </h2>
+        </div>
 
         @if (loading()) {
           <div class="grid md:grid-cols-3 gap-8">
             @for (i of [1,2,3]; track i) {
-              <div class="rounded-3xl h-28 bg-gray-800 animate-pulse"></div>
+              <div class="rounded-[2.5rem] h-48 bg-gray-50 animate-pulse border border-gray-100"></div>
             }
           </div>
         } @else if (categories().length > 0) {
@@ -33,25 +43,29 @@ const CATEGORY_COLORS = [
               <a
                 [routerLink]="['/catalogo']"
                 [queryParams]="{ categoria: cat.idCategoria }"
-                [class]="'group relative p-10 rounded-[2rem] overflow-hidden hover:scale-105 transition-all cursor-pointer block ' + getColor(i)"
+                class="group relative p-12 rounded-[2.5rem] overflow-hidden hover:translate-y-[-8px] transition-all duration-500 cursor-pointer block shadow-2xl shadow-emerald-900/5 hover:shadow-emerald-900/20"
               >
-                <!-- Filtro de contraste para legibilidad perfecta -->
-                <div class="absolute inset-0 bg-gradient-to-t from-black/60 via-black/20 to-transparent z-0 opacity-80 group-hover:opacity-100 transition-opacity"></div>
+                <!-- Background Gradient -->
+                <div [class]="'absolute inset-0 bg-gradient-to-br z-0 transition-transform duration-700 group-hover:scale-110 ' + getColor(i)"></div>
                 
+                <!-- Texture overlay -->
+                <div class="absolute inset-0 opacity-10 mix-blend-overlay z-[1] bg-[url('https://www.transparenttextures.com/patterns/carbon-fibre.png')]"></div>
+
                 <div class="relative z-10">
-                  <p class="text-xl font-black tracking-tight uppercase">{{ cat.nombreCategoria }}</p>
+                  <div class="w-12 h-12 bg-white/20 backdrop-blur-md rounded-2xl flex items-center justify-center mb-6 border border-white/30 group-hover:bg-white transition-colors">
+                     <svg class="w-6 h-6 text-white group-hover:text-emerald-900 transition-colors" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M14 5l7 7m0 0l-7 7m7-7H3"></path></svg>
+                  </div>
+                  <p class="text-3xl font-black tracking-tighter uppercase italic text-white mb-2 leading-none">{{ cat.nombreCategoria }}</p>
                   @if (cat.descripcion) {
-                    <p class="text-white/90 text-sm mt-2 line-clamp-2 leading-relaxed">{{ cat.descripcion }}</p>
+                    <p class="text-white font-bold uppercase tracking-widest leading-relaxed line-clamp-2 text-[11px] opacity-90">{{ cat.descripcion }}</p>
                   }
                 </div>
               </a>
             }
           </div>
         } @else {
-          <div class="grid md:grid-cols-3 gap-8">
-            <div class="p-10 rounded-3xl bg-gray-800 text-gray-500 text-center col-span-3">
-              <p>No hay categorías disponibles</p>
-            </div>
+          <div class="bg-gray-50 border border-dashed border-gray-200 rounded-[3rem] p-20 text-center">
+            <p class="text-gray-400 font-black uppercase tracking-widest text-xs">No hay categorías disponibles en este momento</p>
           </div>
         }
 

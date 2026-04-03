@@ -24,9 +24,9 @@ export class CatalogService {
   private getMockProduct(): Product {
     return {
       idProducto: '11111111-1111-1111-1111-111111111111',
-      nombreProducto: '📦 Producto Mock (Activado)',
+      nombreProducto: ' Producto Mock (Activado)',
       descripcion: 'Producto de prueba activado para verificar el flujo de compra y visualización.',
-      precio: 15.50,
+      precio: 150.50,
       moneda: 'MXN',
       disponible: true,
       fechaCreacion: new Date().toISOString(),
@@ -36,6 +36,9 @@ export class CatalogService {
   }
 
   getProductById(id: string): Observable<Product> {
+    if (id === '11111111-1111-1111-1111-111111111111') {
+      return of(this.getMockProduct());
+    }
     return this.http.get<Product>(this.api.getCatalogUrl(`/api/v1/productos/${id}`));
   }
 

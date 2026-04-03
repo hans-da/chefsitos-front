@@ -7,32 +7,26 @@ import { RouterModule } from '@angular/router';
   standalone: true,
   imports: [CommonModule, RouterModule],
   template: `
-    <section class="relative min-h-[90vh] flex items-center justify-center overflow-hidden rounded-[2.5rem] mx-4 mt-4 shadow-[0_35px_80px_-15px_rgba(0,0,0,0.3)]">
+    <section class="relative min-h-[70vh] flex items-center justify-center overflow-hidden py-32 bg-white">
+      <!-- Grid Background -->
+      <div class="absolute inset-0 bg-[linear-gradient(to_right,#80808012_1px,transparent_1px),linear-gradient(to_bottom,#80808012_1px,transparent_1px)] bg-[size:40px_40px]"></div>
       
-      <div class="absolute inset-0 z-0">
-        <img 
-          src="https://images.unsplash.com/photo-1523050854058-8df90110c9f1?q=80&w=2070&auto=format&fit=crop" 
-          class="w-full h-full object-cover scale-105"
-        />
-        <div class="absolute inset-0 bg-gradient-to-br from-indigo-950/90 via-gray-900/80 to-purple-900/70"></div>
-      </div>
-
-      <div class="relative z-10 text-center px-4 max-w-5xl mx-auto py-20">
+      <div class="relative z-10 text-center px-4 max-w-6xl mx-auto">
         
-        <h1 class="text-8xl md:text-[10rem] font-black text-white uppercase mb-6">
-          UAMI<span class="text-indigo-400">SHOP</span>
+        <h1 class="text-7xl md:text-[10rem] font-black tracking-tighter uppercase leading-[0.8] mb-8">
+          <span class="text-[#1a1a1a]">UAMI</span><span class="text-[#50E38F]">SHOP</span>
         </h1>
 
-        <p class="text-xl md:text-2xl text-gray-200 mb-12">
+        <p class="text-xl md:text-2xl text-gray-500 font-medium mb-16 tracking-tight">
           Tu mercado universitario digital dentro de la UAM.
         </p>
 
-        <div class="flex gap-6 justify-center">
-          <a routerLink="/catalogo" class="px-10 py-5 bg-indigo-600 text-white rounded-3xl font-black hover:scale-105 transition-all text-sm uppercase tracking-widest">
+        <div class="flex flex-col sm:flex-row gap-6 justify-center items-center">
+          <a routerLink="/catalogo" class="px-12 py-5 bg-[#006341] text-white rounded-[1.5rem] font-black uppercase text-sm tracking-[0.2em] shadow-2xl shadow-emerald-900/20 hover:scale-105 active:scale-95 transition-all w-full sm:w-auto">
             Explorar
           </a>
 
-          <a routerLink="/destacados" class="px-10 py-5 border-2 border-white/30 text-white rounded-3xl font-black hover:bg-white/10 hover:scale-105 transition-all text-sm uppercase tracking-widest">
+          <a routerLink="/destacados" class="px-12 py-5 bg-[#121212] text-white rounded-[1.5rem] font-black uppercase text-sm tracking-[0.2em] shadow-2xl shadow-gray-900/30 hover:scale-105 active:scale-95 transition-all w-full sm:w-auto">
             Destacados
           </a>
         </div>

@@ -38,6 +38,8 @@ import { CartService } from '../../../core/services/cart.service';
                class="px-6 py-2.5 rounded-xl text-[10px] font-black uppercase tracking-[0.2em] text-gray-400 hover:text-gray-900 transition-all">Inicio</a>
             <a routerLink="/catalogo" routerLinkActive="text-indigo-600 bg-indigo-50/50" 
                class="px-6 py-2.5 rounded-xl text-[10px] font-black uppercase tracking-[0.2em] text-gray-400 hover:text-gray-900 transition-all">Explorar</a>
+            <a routerLink="/destacados" routerLinkActive="text-indigo-600 bg-indigo-50/50" 
+               class="px-6 py-2.5 rounded-xl text-[10px] font-black uppercase tracking-[0.2em] text-gray-400 hover:text-gray-900 transition-all">Destacados</a>
           </div>
 
           <div class="flex items-center gap-4">

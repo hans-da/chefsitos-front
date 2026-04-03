@@ -1,5 +1,14 @@
-/* --- CONFIGURACIÓN DE TAILWIND V4 PARA UAMISHOP --- */
 @import 'tailwindcss';
+
+/* --- CURSOR PERSONALIZADO --- */
+html, body {
+  cursor: url("data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' width='32' height='32' style='font-size:24px;'><text y='20'>🧀</text></svg>") 16 16, auto !important;
+}
+
+/* Restablecer para elementos interactivos si se desea, o dejar todo queso */
+a, button {
+  cursor: url("data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' width='32' height='32' style='font-size:24px;'><text y='20'>🧀</text></svg>") 16 16, pointer !important;
+}
 
 @theme {
   --color-indigo-50: #f0fdf4;
@@ -42,8 +51,8 @@
 section, .relative.overflow-hidden { background-color: transparent !important; }
 
 /* --- TIPOGRAFÍA Y COLORES CRÍTICOS --- */
-h1.text-white { color: #171717 !important; text-shadow: none !important; }
-p.text-gray-300, p.text-indigo-200, p { color: #525252 !important; }
+h1.text-white { color: #171717; text-shadow: none !important; }
+p.text-gray-300, p.text-indigo-200 { color: #525252; }
 
 /* Asegura que "SHOP" sea verde */
 .text-indigo-600, [class*="text-indigo-600"] { 

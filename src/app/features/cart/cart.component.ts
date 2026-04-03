@@ -73,7 +73,7 @@ import { FormsModule } from '@angular/forms';
                     <div class="flex items-center justify-between mt-8">
                        <div class="flex items-center bg-gray-50 rounded-2xl p-1 border border-gray-100">
                          <button (click)="updateQty(item.productoId, item.cantidad - 1)" class="w-10 h-10 flex items-center justify-center text-gray-400 hover:text-indigo-600 font-black disabled:opacity-20" [disabled]="item.cantidad <= 1">－</button>
-                         <span class="w-12 text-center font-black text-gray-900 text-sm">{{ item.cantidad }}</span>
+                         <span class="w-12 text-center font-black text-indigo-600 text-base">{{ item.cantidad }}</span>
                          <button (click)="updateQty(item.productoId, item.cantidad + 1)" class="w-10 h-10 flex items-center justify-center text-gray-400 hover:text-indigo-600 font-black disabled:opacity-20" [disabled]="item.cantidad >= 10">＋</button>
                        </div>
                        
@@ -90,16 +90,16 @@ import { FormsModule } from '@angular/forms';
               <div class="bg-gray-900 rounded-[3rem] p-10 shadow-2xl shadow-indigo-200/50 text-white relative overflow-hidden">
                 <div class="absolute -top-10 -right-10 w-32 h-32 bg-indigo-500 rounded-full blur-[80px] opacity-20"></div>
                 
-                <h2 class="text-2xl font-black uppercase tracking-tighter mb-10 italic">Resumen</h2>
+                <h2 class="text-2xl font-black uppercase tracking-tighter mb-10 italic text-gray-900">Resumen</h2>
                 
                 <div class="space-y-6 mb-12">
-                  <div class="flex justify-between items-center border-b border-white/10 pb-4">
+                  <div class="flex justify-between items-center border-b border-gray-200 pb-4">
                     <span class="text-[10px] font-black uppercase tracking-widest text-gray-400">Subtotal</span>
-                    <span class="font-bold text-lg">{{ cart()?.subtotal | currency:cart()?.moneda }}</span>
+                    <span class="font-bold text-lg text-gray-900">{{ cart()?.subtotal | currency:cart()?.moneda }}</span>
                   </div>
-                  <div class="flex justify-between items-center border-b border-white/10 pb-4">
+                  <div class="flex justify-between items-center border-b border-gray-200 pb-4">
                     <span class="text-[10px] font-black uppercase tracking-widest text-gray-400">Envío</span>
-                    <span class="font-black text-[10px] uppercase tracking-widest text-emerald-400">Bonificado</span>
+                    <span class="font-black text-[10px] uppercase tracking-widest text-emerald-600">Bonificado</span>
                   </div>
                   
                   <div class="pt-2">
@@ -112,8 +112,8 @@ import { FormsModule } from '@angular/forms';
                 </div>
 
                 <div class="mb-10">
-                  <span class="text-[10px] font-black uppercase tracking-widest text-indigo-400 block mb-2">Total a pagar</span>
-                  <div class="text-5xl font-black tracking-tighter leading-none italic">{{ cart()?.total | currency:cart()?.moneda }}</div>
+                  <span class="text-[10px] font-black uppercase tracking-widest text-indigo-600 block mb-2">Total a pagar</span>
+                  <div class="text-5xl font-black tracking-tighter leading-none italic text-gray-900">{{ cart()?.total | currency:cart()?.moneda }}</div>
                 </div>
 
                 <button 

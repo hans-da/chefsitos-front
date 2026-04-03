@@ -34,7 +34,7 @@ import { Address } from '../../core/models/order.model';
             <div class="space-y-3">
               @for (item of cart()!.items; track item.productoId) {
                 <div class="flex justify-between items-center text-sm">
-                  <span class="font-semibold text-gray-700">{{ item.nombreProducto }} × {{ item.cantidad }}</span>
+                  <span class="font-semibold text-gray-700">{{ item.nombreProducto }} × <span class="text-indigo-600 font-bold">{{ item.cantidad }}</span></span>
                   <span class="font-bold text-gray-900">{{ item.subtotal | currency:item.moneda }}</span>
                 </div>
               }
