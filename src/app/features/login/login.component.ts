@@ -18,9 +18,11 @@ import { AuthService } from '../../core/services/auth.service';
       </div>
 
       <div class="sm:mx-auto sm:w-full sm:max-w-md">
-         <div class="bg-white py-8 px-4 shadow-xl sm:rounded-2xl sm:px-10 border border-gray-100">
+         <div class="bg-white py-8 px-4 shadow-2xl shadow-indigo-300/40 sm:rounded-2xl sm:px-10 border border-gray-100 relative overflow-hidden">
+           <div class="absolute -top-20 -right-20 w-60 h-60 bg-indigo-600 rounded-full blur-[80px] opacity-10 pointer-events-none"></div>
+           <div class="absolute -bottom-20 -left-20 w-60 h-60 bg-emerald-500 rounded-full blur-[80px] opacity-10 pointer-events-none"></div>
            
-           <div class="space-y-6">
+           <div class="space-y-6 relative z-10">
               <button 
                 (click)="loginCustomer()"
                 class="w-full flex justify-center items-center py-4 px-4 border border-transparent rounded-xl shadow-sm text-sm font-bold text-white bg-indigo-600 hover:bg-indigo-700 transition-colors focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500">

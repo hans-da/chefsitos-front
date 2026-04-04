@@ -6,8 +6,7 @@ import { CatalogService } from '../../core/services/catalog.service';
 import { CategoryService } from '../../core/services/category.service';
 import { CartService } from '../../core/services/cart.service';
 import { NotificationService } from '../../core/services/notification.service';
-import { Product } from '../../core/models/product.model';
-import { Stats } from '../../core/models/stats.model';
+import { Product, ProductStats } from '../../core/models/product.model';
 import { LoadingSpinnerComponent } from '../../shared/components/loading-spinner/loading-spinner.component';
 import { BadgeComponent } from '../../shared/components/badge/badge.component';
 import { NavbarComponent } from '../../shared/components/navbar/navbar.component';
@@ -127,7 +126,7 @@ export class ProductDetailComponent implements OnInit {
   private notification = inject(NotificationService);
 
   product = signal<Product | null>(null);
-  stats = signal<Stats | null>(null);
+  stats = signal<ProductStats | null>(null);
   categoryName = signal<string>('Cargando...');
   loading = signal(true);
 

@@ -3,7 +3,6 @@ import { HttpClient } from '@angular/common/http';
 import { Observable, catchError, of } from 'rxjs';
 import { ApiService } from './api.service';
 import { Order, Address } from '../models/order.model';
-import { CartItem } from '../models/cart.model';
 
 @Injectable({
   providedIn: 'root'
@@ -12,12 +11,15 @@ export class OrderService {
   private http = inject(HttpClient);
   private api = inject(ApiService);
 
+  /**
+   * Obtiene TODAS las órdenes del sistema.
+   * El filtrado por cliente se hace en el frontend.
+   */
   getOrders(): Observable<Order[]> {
-    // API does not filter by user, we fetch all and frontend will filter (per prompt instructions).
     return this.http.get<Order[]>(this.api.getOrdersUrl('/api/v1/ordenes')).pipe(
       catchError(err => {
-        console.error('Error cargando órdenes (posible fallo de red o gateway):', err);
-        return of([]); // Devolvemos lista vacía para no romper el dashboard
+        console.error('Error cargando órdenes:', err);
+        return of([]);
       })
     );
   }
@@ -28,15 +30,6 @@ export class OrderService {
 
   createOrderFromCart(carritoId: string, direccion: Address): Observable<Order> {
     return this.http.post<Order>(this.api.getOrdersUrl('/api/v1/ordenes/desde-carrito'), { carritoId, direccion });
-  }
-
-  createDirectOrder(clienteId: string, direccion: Address, items: CartItem[]): Observable<Order> {
-    // Map CartItem[] to ItemOrdenRequest[] (only productoId and cantidad)
-    const itemsMapped = items.map(item => ({
-      productoId: item.productoId,
-      cantidad: item.cantidad
-    }));
-    return this.http.post<Order>(this.api.getOrdersUrl('/api/v1/ordenes/directa'), { clienteId, items: itemsMapped, direccion });
   }
 
   confirmOrder(id: string): Observable<Order> {

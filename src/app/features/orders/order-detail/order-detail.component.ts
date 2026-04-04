@@ -1,4 +1,4 @@
-import { Component, inject, OnInit, signal } from '@angular/core';
+import { Component, inject, OnInit, signal, computed } from '@angular/core';
 import { CommonModule, Location } from '@angular/common';
 import { ActivatedRoute, RouterModule } from '@angular/router';
 import { FormsModule } from '@angular/forms';
@@ -9,6 +9,23 @@ import { BadgeComponent } from '../../../shared/components/badge/badge.component
 import { LoadingSpinnerComponent } from '../../../shared/components/loading-spinner/loading-spinner.component';
 import { NavbarComponent } from '../../../shared/components/navbar/navbar.component';
 import { FooterComponent } from '../../../shared/components/footer/footer.component';
+
+/**
+ * ═══════════════════════════════════════════════════════
+ * MOCKS DE FRONTEND — Solo datos de apoyo visual
+ * Estos datos NO vienen del backend. Se generan localmente
+ * para enriquecer la experiencia sin romper el contrato REST.
+ * ═══════════════════════════════════════════════════════
+ */
+function generarReferenciaPagoMock(orderId: string): string {
+  return `REF-${orderId.substring(0, 8).toUpperCase()}-${Date.now().toString(36).toUpperCase()}`;
+}
+
+function generarGuiaEnvioMock(orderId: string): string {
+  return `GUIA-MX-${orderId.substring(0, 6).toUpperCase()}${Math.floor(Math.random() * 9000 + 1000)}`;
+}
+
+const PROVEEDOR_MOCK = 'UAMIShop Express';
 
 @Component({
   selector: 'app-order-detail',
@@ -34,7 +51,7 @@ import { FooterComponent } from '../../../shared/components/footer/footer.compon
              <div class="p-8 border-b border-gray-100 flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4 bg-gray-50/50">
                <div>
                  <h1 class="text-2xl font-extrabold text-gray-900">Orden {{ order()?.numeroOrden }}</h1>
-                 <p class="text-sm text-gray-500 mt-1">ID interno: {{ order()?.id }}</p>
+                 <p class="text-sm text-gray-500 mt-1">ID: {{ order()?.id }}</p>
                </div>
                <app-badge [text]="order()?.estado!" [type]="getStatusBadgeType(order()?.estado!)" customClasses="px-4 py-2 text-sm font-bold shadow-sm"></app-badge>
              </div>
@@ -43,38 +60,38 @@ import { FooterComponent } from '../../../shared/components/footer/footer.compon
              <div class="p-8 border-b border-gray-100">
                 <h3 class="text-lg font-bold text-gray-900 mb-8">Estado del pedido</h3>
                 
-                <div class="relative max-w-2xl mx-auto">
+                <div class="relative max-w-3xl mx-auto">
                   @if (order()?.estado !== 'CANCELADA') {
                     <div class="absolute inset-0 top-1/2 -mt-1 h-2 bg-gray-100 rounded-full z-0 hidden sm:block"></div>
                     <div class="absolute inset-0 top-1/2 -mt-1 h-2 bg-emerald-500 rounded-full z-0 hidden sm:block transition-all duration-1000" [style.width]="getStepperProgress() + '%'"></div>
                     
                     <div class="relative z-10 flex flex-col sm:flex-row justify-between gap-8 sm:gap-0">
                       
-                      <!-- Step 1 -->
+                      <!-- Step 1: Confirmada -->
                       <div class="flex flex-row sm:flex-col items-center gap-4 sm:gap-2">
-                        <div class="w-10 h-10 rounded-full flex items-center justify-center font-bold shadow-md transition-colors" [ngClass]="getStepClass('CONFIRMADA')">
-                           1
-                        </div>
+                        <div class="w-10 h-10 rounded-full flex items-center justify-center font-bold shadow-md transition-colors" [ngClass]="getStepClass('CONFIRMADA')">1</div>
                         <span class="text-sm font-medium text-gray-700">Confirmada</span>
                       </div>
 
-                      <!-- Step 2 -->
+                      <!-- Step 2: Pago -->
                       <div class="flex flex-row sm:flex-col items-center gap-4 sm:gap-2">
-                        <div class="w-10 h-10 rounded-full flex items-center justify-center font-bold shadow-md transition-colors" [ngClass]="getStepClass('EN_PREPARACION')">
-                           2
-                        </div>
+                        <div class="w-10 h-10 rounded-full flex items-center justify-center font-bold shadow-md transition-colors" [ngClass]="getStepClass('PAGO_PROCESADO')">2</div>
+                        <span class="text-sm font-medium text-gray-700">Pago procesado</span>
+                      </div>
+
+                      <!-- Step 3: Preparación -->
+                      <div class="flex flex-row sm:flex-col items-center gap-4 sm:gap-2">
+                        <div class="w-10 h-10 rounded-full flex items-center justify-center font-bold shadow-md transition-colors" [ngClass]="getStepClass('EN_PREPARACION')">3</div>
                         <span class="text-sm font-medium text-gray-700">En preparación</span>
                       </div>
 
-                      <!-- Step 3 -->
+                      <!-- Step 4: Enviada -->
                       <div class="flex flex-row sm:flex-col items-center gap-4 sm:gap-2">
-                        <div class="w-10 h-10 rounded-full flex items-center justify-center font-bold shadow-md transition-colors" [ngClass]="getStepClass('ENVIADA')">
-                           3
-                        </div>
-                        <span class="text-sm font-medium text-gray-700">Cargada</span>
+                        <div class="w-10 h-10 rounded-full flex items-center justify-center font-bold shadow-md transition-colors" [ngClass]="getStepClass('ENVIADA')">4</div>
+                        <span class="text-sm font-medium text-gray-700">Enviada</span>
                       </div>
 
-                      <!-- Step 4 -->
+                      <!-- Step 5: Entregada -->
                       <div class="flex flex-row sm:flex-col items-center gap-4 sm:gap-2">
                         <div class="w-10 h-10 rounded-full flex items-center justify-center font-bold shadow-md transition-colors" [ngClass]="getStepClass('ENTREGADA')">
                            <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7"></path></svg>
@@ -97,12 +114,36 @@ import { FooterComponent } from '../../../shared/components/footer/footer.compon
                 </div>
              </div>
 
+             <!-- Información de envío y tracking (Mock visual) -->
+             @if (showTrackingInfo()) {
+               <div class="p-8 border-b border-gray-100 bg-indigo-50/30">
+                 <h3 class="text-sm font-semibold text-gray-500 uppercase tracking-wider mb-4">Información de Envío</h3>
+                 <div class="grid grid-cols-1 sm:grid-cols-3 gap-4">
+                   <div class="bg-white rounded-xl p-4 border border-gray-100">
+                     <p class="text-[9px] font-black text-gray-400 uppercase tracking-widest mb-1">Proveedor</p>
+                     <p class="font-bold text-gray-900">{{ proveedorMock }}</p>
+                     <p class="text-[8px] text-gray-400 italic mt-1">* Dato de referencia (mock)</p>
+                   </div>
+                   <div class="bg-white rounded-xl p-4 border border-gray-100">
+                     <p class="text-[9px] font-black text-gray-400 uppercase tracking-widest mb-1">Guía de Envío</p>
+                     <p class="font-bold text-gray-900 font-mono text-sm">{{ guiaMock }}</p>
+                     <p class="text-[8px] text-gray-400 italic mt-1">* Dato de referencia (mock)</p>
+                   </div>
+                   <div class="bg-white rounded-xl p-4 border border-gray-100">
+                     <p class="text-[9px] font-black text-gray-400 uppercase tracking-widest mb-1">Ref. Pago</p>
+                     <p class="font-bold text-gray-900 font-mono text-sm">{{ refPagoMock }}</p>
+                     <p class="text-[8px] text-gray-400 italic mt-1">* Dato de referencia (mock)</p>
+                   </div>
+                 </div>
+               </div>
+             }
+
              <!-- Details -->
              <div class="p-8">
                 <div class="grid grid-cols-1 md:grid-cols-2 gap-8">
                   <div>
                     <h3 class="text-sm font-semibold text-gray-500 uppercase tracking-wider mb-2">Dirección de Envío</h3>
-                    <p class="text-gray-900 font-medium whitespace-pre-line">{{ order()?.direccionResumen }}</p>
+                    <p class="text-gray-900 font-medium whitespace-pre-line">{{ order()?.direccionResumen || 'No especificada' }}</p>
                   </div>
                   <div class="md:text-right">
                     <h3 class="text-sm font-semibold text-gray-500 uppercase tracking-wider mb-2">Total</h3>
@@ -112,12 +153,14 @@ import { FooterComponent } from '../../../shared/components/footer/footer.compon
 
                 @if (canCancel()) {
                   <div class="mt-8 pt-8 border-t border-gray-100">
-                    <button *ngIf="!showCancelModal" (click)="showCancelModal = true" class="text-red-600 hover:text-red-800 font-bold transition-colors">
-                      Cancelar pedido
-                    </button>
+                    @if (!showCancelModal) {
+                      <button (click)="showCancelModal = true" class="text-red-600 hover:text-red-800 font-bold transition-colors">
+                        Cancelar pedido
+                      </button>
+                    }
                     
                     @if (showCancelModal) {
-                      <div class="mt-4 bg-red-50 p-6 rounded-2xl border border-red-100 animate-fade-in-up">
+                      <div class="mt-4 bg-red-50 p-6 rounded-2xl border border-red-100">
                         <h4 class="text-red-900 font-bold mb-2">Motivo de cancelación</h4>
                         <p class="text-red-700 text-sm mb-4">Por favor escribe brevemente por qué deseas cancelar este pedido (Mínimo 10 caracteres).</p>
                         <textarea [(ngModel)]="cancelReason" rows="3" class="w-full text-sm rounded-lg border-red-200 focus:ring-red-500 focus:border-red-500 p-3 mb-4"></textarea>
@@ -165,8 +208,21 @@ export class OrderDetailComponent implements OnInit {
   showCancelModal = false;
   cancelReason = '';
 
-  // Ordered steps logically representing progression
-  private readonly stepLogic = ['PENDIENTE', 'CONFIRMADA', 'PAGO_PROCESADO', 'EN_PREPARACION', 'ENVIADA', 'ENTREGADA'];
+  // ═══ MOCKS FRONTEND — Solo apoyo visual ═══
+  refPagoMock = '';
+  guiaMock = '';
+  proveedorMock = PROVEEDOR_MOCK;
+
+  // Stepper con todos los pasos reales del backend
+  private readonly stepLogic: OrderStatus[] = ['PENDIENTE', 'CONFIRMADA', 'PAGO_PROCESADO', 'EN_PREPARACION', 'ENVIADA', 'ENTREGADA'];
+
+  /** Mostrar info de tracking solo si la orden tiene pago procesado o más */
+  showTrackingInfo = computed(() => {
+    const estado = this.order()?.estado;
+    if (!estado) return false;
+    const idx = this.stepLogic.indexOf(estado);
+    return idx >= this.stepLogic.indexOf('PAGO_PROCESADO');
+  });
 
   ngOnInit() {
     this.route.paramMap.subscribe(params => {
@@ -181,6 +237,10 @@ export class OrderDetailComponent implements OnInit {
     this.orderService.getOrderById(id).subscribe({
       next: (o) => {
         this.order.set(o);
+        // Generar mocks basados en el ID de la orden
+        this.refPagoMock = o.referenciaPago || generarReferenciaPagoMock(o.id);
+        this.guiaMock = o.numeroGuia || generarGuiaEnvioMock(o.id);
+        this.proveedorMock = o.proveedorLogistico || PROVEEDOR_MOCK;
         this.loading.set(false);
       },
       error: () => {
@@ -198,7 +258,6 @@ export class OrderDetailComponent implements OnInit {
   canCancel(): boolean {
     const estado = this.order()?.estado;
     if (!estado) return false;
-    // Cannot cancel if ENVIADA, ENTREGADA, or already CANCELADA
     return !['ENVIADA', 'ENTREGADA', 'CANCELADA'].includes(estado);
   }
 
@@ -220,15 +279,15 @@ export class OrderDetailComponent implements OnInit {
   getStepperProgress(): number {
     const estado = this.order()?.estado || 'PENDIENTE';
     const idx = Math.max(0, this.stepLogic.indexOf(estado));
-    // Mapping steps visually (we show 4 steps: CONFIRMADA(0), EN_PREP(1), ENVIADA(2), ENTREGADA(3))
+    // 5 pasos visuales: CONFIRMADA(0), PAGO(1), PREP(2), ENVIADA(3), ENTREGADA(4)
     let visualStep = 0;
     if (idx >= this.stepLogic.indexOf('CONFIRMADA')) visualStep = 0;
-    if (idx >= this.stepLogic.indexOf('PAGO_PROCESADO')) visualStep = 0.5; // halfway
-    if (idx >= this.stepLogic.indexOf('EN_PREPARACION')) visualStep = 1;
-    if (idx >= this.stepLogic.indexOf('ENVIADA')) visualStep = 2;
-    if (idx >= this.stepLogic.indexOf('ENTREGADA')) visualStep = 3;
+    if (idx >= this.stepLogic.indexOf('PAGO_PROCESADO')) visualStep = 1;
+    if (idx >= this.stepLogic.indexOf('EN_PREPARACION')) visualStep = 2;
+    if (idx >= this.stepLogic.indexOf('ENVIADA')) visualStep = 3;
+    if (idx >= this.stepLogic.indexOf('ENTREGADA')) visualStep = 4;
 
-    return (visualStep / 3) * 100;
+    return (visualStep / 4) * 100;
   }
 
   getStepClass(targetStep: OrderStatus): string {
@@ -236,12 +295,9 @@ export class OrderDetailComponent implements OnInit {
     const currentIdx = this.stepLogic.indexOf(estado);
     const targetIdx = this.stepLogic.indexOf(targetStep);
 
-    // Some statuses are intermediate but conceptually fall under a major step
-    if (currentIdx > targetIdx || (currentIdx === targetIdx)) {
-      // Completed or current
+    if (currentIdx >= targetIdx) {
       return 'bg-emerald-500 text-white border-none z-10';
     } else {
-      // Future
       return 'bg-white text-gray-400 border-2 border-gray-200 z-10';
     }
   }

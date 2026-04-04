@@ -1,6 +1,6 @@
 import { Injectable, inject, signal, computed } from '@angular/core';
 import { HttpClient } from '@angular/common/http';
-import { Observable, tap, catchError, of, map, switchMap, throwError } from 'rxjs'; // <-- throwError importado
+import { Observable, tap, catchError, of, switchMap, throwError } from 'rxjs';
 
 import { ApiService } from './api.service';
 import { Cart } from '../models/cart.model';
@@ -15,15 +15,26 @@ export class CartService {
   private auth = inject(AuthService);
 
   private cartSignal = signal<Cart | null>(null);
-  
+
   cart = this.cartSignal.asReadonly();
   cartCount = computed(() => {
     const current = this.cartSignal();
-    return current ? current.items.reduce((total, item) => total + item.cantidad, 0) : 0;
+    return current ? current.items.reduce((total: number, item: any) => total + item.cantidad, 0) : 0;
+  });
+
+  /** Indica si el carrito actual permite edición (solo en estado ACTIVO) */
+  isEditable = computed(() => {
+    const current = this.cartSignal();
+    return current !== null && current.estado === 'ACTIVO';
+  });
+
+  /** Indica si el carrito está en proceso de checkout */
+  isInCheckout = computed(() => {
+    const current = this.cartSignal();
+    return current !== null && current.estado === 'EN_CHECKOUT';
   });
 
   constructor() {
-    // Signals are synchronous, manual check for local cart is enough
     const savedCartId = localStorage.getItem('uamishop_cart_id');
     if (savedCartId && this.auth.isAuthenticated()) {
       this.getCart(savedCartId).subscribe();
@@ -32,7 +43,7 @@ export class CartService {
 
   createCart(clienteId: string): Observable<Cart> {
     return this.http.post<Cart>(this.api.getSalesUrl('/api/v1/carritos'), { clienteId }).pipe(
-      tap(cart => {
+      tap((cart: Cart) => {
         this.cartSignal.set(cart);
         localStorage.setItem('uamishop_cart_id', cart.carritoId);
       })
@@ -41,8 +52,8 @@ export class CartService {
 
   getCart(carritoId: string): Observable<Cart> {
     return this.http.get<Cart>(this.api.getSalesUrl(`/api/v1/carritos/${carritoId}`)).pipe(
-      tap(cart => this.cartSignal.set(cart)),
-      catchError(err => {
+      tap((cart: Cart) => this.cartSignal.set(cart)),
+      catchError((err: any) => {
         if (err.status === 404) {
           this.clearLocalCart();
         }
@@ -56,89 +67,54 @@ export class CartService {
     if (!clientId) return throwError(() => new Error('Usuario no autenticado'));
 
     const current = this.cartSignal();
-    
-    //  INTERCEPCIÓN MOCK: Si es el producto de prueba, no llamamos al servidor
-    if (productoId === '11111111-1111-1111-1111-111111111111') {
-      const mockCart: Cart = current || {
-        carritoId: 'mock-cart-1111',
-        clienteId: clientId,
-        estado: 'ACTIVO',
-        items: [],
-        descuentos: [],
-        subtotal: 0,
-        total: 0,
-        moneda: 'MXN'
-      };
 
-      const items = [...mockCart.items];
-      const existingItemIndex = items.findIndex(i => i.productoId === productoId);
-      const precioUnitario = 150.50;
-
-      if (existingItemIndex >= 0) {
-        const item = items[existingItemIndex];
-        items[existingItemIndex] = { 
-          ...item, 
-          cantidad: item.cantidad + cantidad,
-          subtotal: (item.cantidad + cantidad) * precioUnitario
-        };
-      } else {
-        items.push({
-          productoId: productoId,
-          nombreProducto: 'Producto Mock (Activado)',
-          cantidad: cantidad,
-          sku: 'MOCK-SKU',
-          precioUnitario: precioUnitario,
-          subtotal: cantidad * precioUnitario,
-          moneda: 'MXN'
-        });
-      }
-
-      const totalAmount = items.reduce((sum, i) => sum + i.subtotal, 0);
-      const updatedCart: Cart = { ...mockCart, items, subtotal: totalAmount, total: totalAmount };
-      
-      this.cartSignal.set(updatedCart);
-      return of(updatedCart);
+    // Si el carrito está en checkout, no se pueden agregar productos
+    if (current && current.estado === 'EN_CHECKOUT') {
+      return throwError(() => new Error('El carrito está en proceso de checkout. Completa o cancela la compra actual.'));
     }
 
-    // Lógica normal para productos reales
+    // Si no hay carrito o el carrito no está activo, crear uno nuevo
     if (!current || current.estado !== 'ACTIVO') {
       return this.createCart(clientId).pipe(
-        switchMap((newCart: any) => 
+        switchMap((newCart: any) =>
           this.http.post<Cart>(this.api.getSalesUrl(`/api/v1/carritos/${newCart.carritoId}/productos`), { productoId, cantidad })
         ),
-        tap(cart => this.cartSignal.set(cart))
+        tap((cart: Cart) => this.cartSignal.set(cart))
       );
     }
 
     return this.http.post<Cart>(this.api.getSalesUrl(`/api/v1/carritos/${current.carritoId}/productos`), { productoId, cantidad }).pipe(
-      tap(cart => this.cartSignal.set(cart))
+      tap((cart: Cart) => this.cartSignal.set(cart))
     );
   }
 
   updateQuantity(productoId: string, cantidad: number): Observable<Cart> {
     const current = this.cartSignal();
     if (!current) return throwError(() => new Error('No hay carrito activo'));
+    if (current.estado !== 'ACTIVO') return throwError(() => new Error('El carrito no permite edición en su estado actual'));
 
     return this.http.patch<Cart>(this.api.getSalesUrl(`/api/v1/carritos/${current.carritoId}/productos/${productoId}`), { nuevaCantidad: cantidad }).pipe(
-      tap(cart => this.cartSignal.set(cart))
+      tap((cart: Cart) => this.cartSignal.set(cart))
     );
   }
 
   removeProduct(productoId: string): Observable<Cart> {
     const current = this.cartSignal();
     if (!current) return throwError(() => new Error('No hay carrito activo'));
+    if (current.estado !== 'ACTIVO') return throwError(() => new Error('El carrito no permite edición en su estado actual'));
 
     return this.http.delete<Cart>(this.api.getSalesUrl(`/api/v1/carritos/${current.carritoId}/productos/${productoId}`)).pipe(
-      tap(cart => this.cartSignal.set(cart))
+      tap((cart: Cart) => this.cartSignal.set(cart))
     );
   }
 
   clearCart(): Observable<Cart> {
     const current = this.cartSignal();
     if (!current) return throwError(() => new Error('No hay carrito activo'));
+    if (current.estado !== 'ACTIVO') return throwError(() => new Error('El carrito no permite edición en su estado actual'));
 
     return this.http.delete<Cart>(this.api.getSalesUrl(`/api/v1/carritos/${current.carritoId}/productos`)).pipe(
-      tap(cart => this.cartSignal.set(cart))
+      tap((cart: Cart) => this.cartSignal.set(cart))
     );
   }
 
@@ -146,8 +122,13 @@ export class CartService {
     const current = this.cartSignal();
     if (!current) return throwError(() => new Error('No hay carrito activo'));
 
+    // Si ya está en checkout, devolver el estado actual sin volver a llamar al backend
+    if (current.estado === 'EN_CHECKOUT') {
+      return of(current);
+    }
+
     return this.http.post<Cart>(this.api.getSalesUrl(`/api/v1/carritos/${current.carritoId}/checkout`), {}).pipe(
-      tap(cart => {
+      tap((cart: Cart) => {
         this.cartSignal.set(cart);
       })
     );
@@ -162,15 +143,7 @@ export class CartService {
     );
   }
 
-  abandonCart(): Observable<Cart> {
-    const current = this.cartSignal();
-    if (!current) return throwError(() => new Error('No hay carrito activo'));
-
-    return this.http.post<Cart>(this.api.getSalesUrl(`/api/v1/carritos/${current.carritoId}/abandonar`), {}).pipe(
-      tap(() => this.clearLocalCart())
-    );
-  }
-
+  /** Limpia el carrito del estado local y localStorage */
   clearLocalCart() {
     this.cartSignal.set(null);
     localStorage.removeItem('uamishop_cart_id');

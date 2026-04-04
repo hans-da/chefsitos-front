@@ -16,7 +16,7 @@ export const routes: Routes = [
   },
   {
     path: 'destacados',
-    loadComponent: () => import('./features/catalog/catalog.component').then(m => m.CatalogComponent)
+    loadComponent: () => import('./features/catalog/featured-catalog.component').then(m => m.FeaturedCatalogComponent)
   },
   {
     path: 'productos/:id',
@@ -48,6 +48,10 @@ export const routes: Routes = [
       { path: 'categorias', loadComponent: () => import('./features/admin/categories/categories.component').then(m => m.AdminCategoriesComponent) },
       { path: 'ordenes', loadComponent: () => import('./features/admin/orders/orders.component').then(m => m.AdminOrdersComponent) }
     ]
+  },
+  {
+    path: 'error',
+    loadComponent: () => import('./features/error/error.component').then(m => m.ErrorComponent)
   },
   {
     path: '**',

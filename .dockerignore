@@ -6,5 +6,4 @@ dist
 .vscode-test
 .idea
 *.log
-*.lock
 coverage

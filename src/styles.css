@@ -48,7 +48,7 @@ a, button {
     background-size: 30px 30px !important;
 }
 
-section, .relative.overflow-hidden { background-color: transparent !important; }
+section { background-color: transparent !important; }
 
 /* --- TIPOGRAFÍA Y COLORES CRÍTICOS --- */
 h1.text-white { color: #171717; text-shadow: none !important; }
@@ -78,3 +78,6 @@ p.text-gray-300, p.text-indigo-200 { color: #525252; }
     box-shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.2);
     transform: translateY(-1px);
 }
+
+/* Scroll suave global */
+html { scroll-behavior: smooth; }
