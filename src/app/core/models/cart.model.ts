@@ -6,6 +6,7 @@ export interface CartItem {
   precioUnitario: number;
   subtotal: number;
   moneda: string;
+  imagenUrl?: string;
 }
 
 export interface Cart {

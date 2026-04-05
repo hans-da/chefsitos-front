@@ -1,7 +1,7 @@
 import { Component, inject, OnInit, signal } from '@angular/core';
-import { CommonModule, Location } from '@angular/common';
-import { FormBuilder, ReactiveFormsModule, Validators } from '@angular/forms';
-import { ActivatedRoute, RouterModule } from '@angular/router';
+import { CommonModule } from '@angular/common';
+import { RouterModule, ActivatedRoute, Router } from '@angular/router';
+import { ReactiveFormsModule, FormBuilder, Validators } from '@angular/forms';
 import { CatalogService } from '../../core/services/catalog.service';
 import { CategoryService } from '../../core/services/category.service';
 import { CartService } from '../../core/services/cart.service';
@@ -19,211 +19,168 @@ import { FooterComponent } from '../../shared/components/footer/footer.component
   template: `
     <app-navbar></app-navbar>
 
-    <div class="bg-gray-50 min-h-screen pt-8 pb-24">
+    <main class="bg-white min-h-screen pt-24 pb-32">
       <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
         
-        <!-- Back Button -->
-        <button (click)="goBack()" class="inline-flex items-center text-gray-500 hover:text-indigo-600 transition-colors mb-8 group font-medium text-sm">
-          <svg class="w-5 h-5 mr-2 transform group-hover:-translate-x-1 transition-transform" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10 19l-7-7m0 0l7-7m-7 7h18"></path></svg>
-          Volver al catálogo
+        <button (click)="goBack()" class="group flex items-center text-gray-400 hover:text-indigo-600 transition-all mb-16 font-black text-[10px] uppercase tracking-[0.3em]">
+          <span class="mr-3 transform group-hover:-translate-x-2 transition-transform">←</span> 
+          Regresar al Menú
         </button>
 
         @if (loading()) {
-          <app-loading-spinner message="Cargando detalles del producto..."></app-loading-spinner>
+          <app-loading-spinner message="Preparando tu selección..."></app-loading-spinner>
         } @else if (product()) {
-          <div class="bg-white rounded-3xl shadow-sm border border-gray-100 overflow-hidden">
-            <div class="flex flex-col md:flex-row">
-              
-              <!-- Image Section -->
-              <div class="w-full md:w-1/2 lg:w-3/5 bg-gray-50 relative group">
+          <div class="grid grid-cols-1 lg:grid-cols-12 gap-20 items-start">
+            
+            <div class="lg:col-span-7 relative">
+              <div class="absolute -top-10 -left-10 w-40 h-40 bg-indigo-50 rounded-full blur-3xl opacity-50"></div>
+              <div class="aspect-square bg-gray-50 rounded-[4rem] overflow-hidden border border-gray-100 relative shadow-2xl shadow-indigo-100/20 group">
                 <img 
-                  [src]="'https://images.unsplash.com/photo-1523275335684-37898b6baf30?ixlib=rb-4.0.3&auto=format&fit=crop&w=1000&q=80'" 
+                  [src]="product()?.imagenUrl || 'https://images.unsplash.com/photo-1546069901-ba9599a7e63c?auto=format&fit=crop&w=1000&q=80'" 
                   [alt]="product()?.nombreProducto"
-                  class="w-full h-full object-cover min-h-[400px] md:min-h-[500px]"
+                  class="w-full h-full object-cover group-hover:scale-105 transition-transform duration-1000"
                 />
                 @if (!product()?.disponible) {
-                  <div class="absolute inset-0 bg-white/60 backdrop-blur-sm flex items-center justify-center">
-                    <span class="bg-gray-900 text-white px-8 py-4 rounded-full font-bold tracking-widest text-lg shadow-2xl">Agotado</span>
+                  <div class="absolute inset-0 bg-white/60 backdrop-blur-md flex items-center justify-center">
+                    <span class="bg-gray-900 text-white px-8 py-3 rounded-2xl font-black text-xs uppercase tracking-[0.4em] shadow-2xl">Agotado temporalmente</span>
                   </div>
                 }
               </div>
+            </div>
 
-              <!-- Product Info Section -->
-              <div class="w-full md:w-1/2 lg:w-2/5 p-8 md:p-12 flex flex-col justify-center">
-                
-                <div class="mb-4">
-                  <app-badge 
-                    [text]="product()!.disponible ? 'Disponible para envío' : 'Sin stock'" 
-                    [type]="product()!.disponible ? 'success' : 'neutral'"
-                    customClasses="px-3 py-1 bg-emerald-50 text-emerald-700 font-semibold text-xs uppercase tracking-wider rounded-md border border-emerald-200">
-                  </app-badge>
+            <div class="lg:col-span-5 flex flex-col pt-4">
+              <div class="mb-10">
+                <div class="flex items-center gap-3 mb-6">
+                  <span class="py-1 px-4 rounded-full bg-indigo-50 text-indigo-600 font-black text-[10px] uppercase tracking-widest">{{ categoryName() }}</span>
+                  <app-badge [text]="product()?.disponible ? 'En Cocina' : 'No Disponible'" [type]="product()?.disponible ? 'success' : 'neutral'"></app-badge>
                 </div>
                 
-                <h1 class="text-3xl md:text-4xl font-extrabold text-gray-900 tracking-tight leading-tight mb-4">
+                <h1 class="text-5xl md:text-6xl font-black text-gray-900 leading-[0.9] mb-6 tracking-tighter italic uppercase">
                   {{ product()?.nombreProducto }}
                 </h1>
                 
-                <div class="text-3xl font-bold text-gray-900 mb-6">
-                  {{ product()?.precio | currency:product()?.moneda }}
+                <div class="flex items-baseline gap-2">
+                  <span class="text-4xl font-light text-indigo-600">{{ product()?.precio | currency:product()?.moneda }}</span>
+                  <span class="text-xs font-black text-gray-300 uppercase tracking-widest">I.V.A Incluido</span>
                 </div>
-                
-                <div class="prose prose-sm sm:prose text-gray-500 mb-6 max-w-none">
-                  <p>{{ product()?.descripcion }}</p>
-                </div>
+              </div>
 
-                <div class="mb-8 p-4 bg-gray-50 rounded-2xl border border-gray-100">
-                  <span class="text-[10px] text-gray-400 font-bold uppercase tracking-widest block mb-1">Categoría</span>
-                  <span class="text-sm font-semibold text-gray-700">{{ categoryName() }}</span>
-                </div>
+              <p class="text-gray-400 text-lg leading-relaxed mb-12 font-medium italic">
+                "{{ product()?.descripcion }}"
+              </p>
 
-                <!-- Stats -->
-                @if (stats()) {
-                  <div class="grid grid-cols-2 gap-4 mb-8">
-                    <div class="bg-indigo-50 border border-indigo-100 rounded-2xl p-4">
-                      <p class="text-[10px] text-indigo-600 font-bold uppercase tracking-wider mb-1">Unidades vendidas</p>
-                      <p class="text-xl font-bold text-gray-900">{{ stats()?.cantidadVendida }}</p>
-                    </div>
-                    <div class="bg-emerald-50 border border-emerald-100 rounded-2xl p-4">
-                      <p class="text-[10px] text-emerald-600 font-bold uppercase tracking-wider mb-1">Ventas Totales</p>
-                      <p class="text-xl font-bold text-gray-900">{{ stats()?.ventasTotales | currency:product()?.moneda }}</p>
-                    </div>
-                    <div class="bg-amber-50 border border-amber-100 rounded-2xl p-4 col-span-2 flex justify-between items-center">
-                      <div>
-                        <p class="text-[10px] text-amber-600 font-bold uppercase tracking-wider mb-1">Deseado por muchos</p>
-                        <p class="text-sm font-medium text-gray-900">Agregado {{ stats()?.vecesAgregadoAlCarrito }} veces al carrito</p>
-                      </div>
-                      @if (stats()?.ultimaVentaAt) {
-                        <div class="text-right">
-                          <p class="text-[10px] text-gray-400 uppercase font-bold">Última venta</p>
-                          <p class="text-xs font-semibold text-gray-500">{{ stats()?.ultimaVentaAt | date:'shortDate' }}</p>
-                        </div>
-                      }
-                    </div>
+              @if (stats()) {
+                <div class="grid grid-cols-2 gap-4 mb-12 p-6 bg-gray-50 rounded-[2.5rem] border border-gray-100">
+                  <div class="text-center border-r border-gray-200">
+                    <p class="text-[9px] text-gray-400 font-black uppercase tracking-widest mb-1">Ordenados</p>
+                    <p class="text-xl font-black text-gray-900">{{ stats()?.cantidadVendida }}<span class="text-indigo-600 text-sm ml-1">u.</span></p>
                   </div>
-                }
-
-                @if (product()?.disponible) {
-                  <form [formGroup]="addToCartForm" (ngSubmit)="addToCart()" class="mt-auto">
-                    <div class="flex items-center gap-4 border-t border-gray-100 pt-8">
-                      <div class="w-32">
-                        <label for="quantity" class="sr-only">Cantidad</label>
-                        <select 
-                          id="quantity" 
-                          formControlName="quantity"
-                          class="block w-full text-base font-semibold text-gray-900 border-gray-300 focus:outline-none focus:ring-indigo-500 focus:border-indigo-500 sm:text-lg rounded-xl shadow-sm py-4 bg-gray-50 border text-center cursor-pointer">
-                          <option [value]="1">1</option>
-                          <option [value]="2">2</option>
-                          <option [value]="3">3</option>
-                          <option [value]="4">4</option>
-                          <option [value]="5">5</option>
-                          <option [value]="6">6</option>
-                          <option [value]="7">7</option>
-                          <option [value]="8">8</option>
-                          <option [value]="9">9</option>
-                          <option [value]="10">10</option>
-                        </select>
-                      </div>
-                      <button 
-                        type="submit" 
-                        class="flex-1 bg-indigo-600 border border-transparent rounded-xl shadow-lg shadow-indigo-600/30 py-4 px-8 flex items-center justify-center text-lg font-bold text-white hover:bg-indigo-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-offset-gray-50 focus:ring-indigo-500 transition-all transform hover:-translate-y-1">
-                        <svg class="w-5 h-5 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M16 11V7a4 4 0 00-8 0v4M5 9h14l1 12H4L5 9z"></path></svg>
-                        Añadir al carrito
-                      </button>
-                    </div>
-                    <p class="text-xs text-center text-gray-400 mt-4">Máximo de 10 unidades por pedido.</p>
-                  </form>
-                } @else {
-                  <div class="mt-auto border-t border-gray-100 pt-8">
-                     <button disabled class="w-full bg-gray-300 border border-transparent rounded-xl py-4 px-8 flex items-center justify-center text-lg font-bold text-gray-500 cursor-not-allowed">
-                        Producto no disponible
-                      </button>
+                  <div class="text-center">
+                    <p class="text-[9px] text-gray-400 font-black uppercase tracking-widest mb-1">Deseados</p>
+                    <p class="text-xl font-black text-gray-900">{{ stats()?.vecesAgregadoAlCarrito }}<span class="text-emerald-500 text-sm ml-1">❤</span></p>
                   </div>
-                }
+                </div>
+              }
 
+              @if (product()?.disponible) {
+                <form [formGroup]="addToCartForm" (ngSubmit)="addToCart()" class="space-y-6">
+                  <div class="flex flex-col sm:flex-row items-center gap-4">
+                    <div class="relative w-full sm:w-32 group">
+                      <select formControlName="quantity" class="w-full appearance-none bg-white border-2 border-gray-100 rounded-[1.5rem] py-4 px-6 font-black text-gray-900 focus:border-indigo-600 focus:ring-0 transition-all cursor-pointer">
+                        @for (n of [1,2,3,4,5]; track n) { <option [value]="n">{{n}}</option> }
+                      </select>
+                      <div class="absolute right-4 top-1/2 -translate-y-1/2 pointer-events-none text-gray-400">
+                        <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path d="M19 9l-7 7-7-7" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"></path></svg>
+                      </div>
+                    </div>
+                    
+                    <button type="submit" class="group relative flex-grow w-full bg-gray-900 text-white py-5 px-8 rounded-[1.5rem] font-black uppercase text-[10px] tracking-[0.2em] shadow-2xl shadow-gray-200 hover:bg-indigo-600 transition-all duration-300 active:scale-95 overflow-hidden">
+                       <div class="absolute inset-0 bg-gradient-to-r from-indigo-600 to-indigo-400 opacity-0 group-hover:opacity-100 transition-opacity duration-300"></div>
+                       <span class="relative z-10">Agregar a mi orden</span>
+                    </button>
+                  </div>
+                </form>
+              }
+
+              <div class="mt-12 flex items-center gap-4 py-6 border-t border-gray-50">
+                <div class="w-10 h-10 rounded-full bg-emerald-50 flex items-center justify-center text-emerald-600">
+                  <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M9 12l2 2 4-4m5.618-4.016A11.955 11.955 0 0112 2.944a11.955 11.955 0 01-8.618 3.04A12.02 12.02 0 003 9c0 5.591 3.824 10.29 9 11.622 5.176-1.332 9-6.03 9-11.622 0-1.042-.133-2.052-.382-3.016z"></path></svg>
+                </div>
+                <p class="text-[10px] font-bold text-gray-400 uppercase tracking-widest">Preparación higiénica garantizada por <span class="text-indigo-300 italic">Chefsitos</span></p>
               </div>
             </div>
           </div>
         }
       </div>
-    </div>
-    
+    </main>
     <app-footer></app-footer>
   `
 })
 export class ProductDetailComponent implements OnInit {
-  route = inject(ActivatedRoute);
-  catalogService = inject(CatalogService);
-  categoryService = inject(CategoryService);
-  cartService = inject(CartService);
-  notification = inject(NotificationService);
-  fb = inject(FormBuilder);
-  location = inject(Location);
+  private route = inject(ActivatedRoute);
+  private router = inject(Router);
+  private fb = inject(FormBuilder);
+  private catalogService = inject(CatalogService);
+  private categoryService = inject(CategoryService);
+  private cartService = inject(CartService);
+  private notification = inject(NotificationService);
 
-  loading = signal(true);
   product = signal<Product | null>(null);
   stats = signal<ProductStats | null>(null);
   categoryName = signal<string>('Cargando...');
+  loading = signal(true);
 
   addToCartForm = this.fb.group({
-    quantity: [1, [Validators.required, Validators.min(1), Validators.max(10)]]
+    quantity: [1, [Validators.required, Validators.min(1)]]
   });
 
   ngOnInit() {
-    this.route.paramMap.subscribe(params => {
-      const id = params.get('id');
-      if (id) {
-        this.loadProductInfo(id);
-      }
-    });
-  }
-
-  loadProductInfo(id: string) {
-    this.loading.set(true);
-    
-    this.catalogService.getProductById(id).subscribe({
-      next: (p) => {
-        this.product.set(p);
-        this.loading.set(false);
-
-        // Fetch category name
-        this.categoryService.getCategoryById(p.idCategoria).subscribe({
-          next: (c) => this.categoryName.set(c.nombreCategoria),
-          error: () => this.categoryName.set('Categoría no disponible')
-        });
-
-        // Fetch stats independently
-        this.catalogService.getProductStats(id).subscribe({
-          next: (s) => this.stats.set(s),
-          error: () => {} // ignore if stats not found
-        });
-      },
-      error: () => {
-        this.notification.error('No se pudo cargar el producto.');
-        this.loading.set(false);
-        this.goBack();
-      }
-    });
-  }
-
-  addToCart() {
-    if (this.addToCartForm.invalid) return;
-
-    const qty = Number(this.addToCartForm.value.quantity);
-    const prod = this.product();
-
-    if (prod && qty > 0) {
-      this.cartService.addProduct(prod.idProducto, qty).subscribe({
-        next: () => {
-          this.notification.success(`Se agregaron ${qty} unidades de ${prod.nombreProducto} al carrito.`);
-        },
-        error: () => {
-           this.notification.error('Error al agregar al carrito. Verifica si has iniciado sesión.');
-        }
-      });
+    const id = this.route.snapshot.paramMap.get('id');
+    if (id) {
+      this.loadProductData(id);
     }
   }
 
-  goBack() {
-    this.location.back();
+  loadProductData(id: string) {
+    this.loading.set(true);
+    this.catalogService.getProductById(id).subscribe({
+      next: (prod) => {
+        this.product.set(prod);
+        this.loadCategoryName(prod.idCategoria);
+        this.loadStats(id);
+        this.loading.set(false);
+      },
+      error: () => {
+        this.notification.error('No pudimos encontrar ese producto');
+        this.router.navigate(['/catalogo']);
+      }
+    });
+  }
+
+  loadCategoryName(catId: string) {
+    this.categoryService.getCategoryById(catId).subscribe(cat => {
+      this.categoryName.set(cat.nombreCategoria);
+    });
+  }
+
+  loadStats(id: string) {
+    this.catalogService.getProductStats(id).subscribe(s => this.stats.set(s));
+  }
+
+  goBack() { this.router.navigate(['/catalogo']); }
+
+  addToCart() {
+    const prod = this.product();
+    if (prod && this.addToCartForm.valid) {
+      const qty = this.addToCartForm.value.quantity || 1;
+      this.cartService.addProduct(prod.idProducto, qty).subscribe({
+        next: () => this.notification.success(`¡Listo! ${qty} ${prod.nombreProducto} al carrito`),
+        error: (err) => {
+          if (err && err.message === 'Usuario no autenticado') {
+            this.notification.error('Inicia sesión para ordenar');
+          }
+        }
+      });
+    }
   }
 }

@@ -6,7 +6,7 @@ import { FooterComponent } from '../../../shared/components/footer/footer.compon
 import { CatalogService } from '../../../core/services/catalog.service';
 import { CategoryService } from '../../../core/services/category.service';
 import { OrderService } from '../../../core/services/order.service';
-import { forkJoin } from 'rxjs';
+import { forkJoin, of, catchError } from 'rxjs';
 import { Product } from '../../../core/models/product.model';
 
 @Component({
@@ -121,10 +121,10 @@ export class AdminDashboardComponent implements OnInit {
 
   loadStats() {
     forkJoin({
-      products: this.catalogService.getProducts(),
-      categories: this.categoryService.getCategories(),
-      orders: this.orderService.getOrders(),
-      bestSellers: this.catalogService.getBestSellers(1)
+      products: this.catalogService.getProducts().pipe(catchError(() => of([]))),
+      categories: this.categoryService.getCategories().pipe(catchError(() => of([]))),
+      orders: this.orderService.getOrders().pipe(catchError(() => of([]))),
+      bestSellers: this.catalogService.getBestSellers(1).pipe(catchError(() => of([])))
     }).subscribe({
       next: (res) => {
         this.productCount.set(res.products.length);

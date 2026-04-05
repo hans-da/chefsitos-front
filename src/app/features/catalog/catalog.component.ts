@@ -1,198 +1,183 @@
 import { Component, inject, OnInit, signal, computed } from '@angular/core';
 import { CommonModule } from '@angular/common';
+import { ActivatedRoute } from '@angular/router';
+import { forkJoin, of } from 'rxjs';
+import { catchError } from 'rxjs/operators';
+
 import { CatalogService } from '../../core/services/catalog.service';
 import { CategoryService } from '../../core/services/category.service';
-import { Product } from '../../core/models/product.model';
-import { Category } from '../../core/models/category.model';
+
 import { ProductCardComponent } from '../../shared/components/product-card/product-card.component';
-import { LoadingSpinnerComponent } from '../../shared/components/loading-spinner/loading-spinner.component';
 import { NavbarComponent } from '../../shared/components/navbar/navbar.component';
 import { FooterComponent } from '../../shared/components/footer/footer.component';
-import { ActivatedRoute } from '@angular/router';
-import { forkJoin } from 'rxjs';
 
 @Component({
   selector: 'app-catalog',
   standalone: true,
-  imports: [CommonModule, ProductCardComponent, LoadingSpinnerComponent, NavbarComponent, FooterComponent],
+  imports: [CommonModule, ProductCardComponent, NavbarComponent, FooterComponent],
   template: `
     <app-navbar></app-navbar>
 
-    <div class="bg-gray-50 min-h-screen pt-8 pb-24">
-      <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-        
-        <!-- Header -->
-        <div class="flex flex-col md:flex-row justify-between items-start md:items-end mb-8 border-b border-gray-200 pb-6 gap-4">
-          <div>
-            <h1 class="text-3xl font-extrabold text-gray-900 tracking-tight">Catálogo de Productos</h1>
-            <p class="text-gray-500 mt-2">Encuentra todo lo que necesitas en nuestra tienda.</p>
-          </div>
-          <div class="w-full md:w-auto">
-            <div class="relative">
-              <input 
-                type="text" 
-                placeholder="Buscar productos..." 
-                [value]="searchTerm()"
-                (input)="onSearch($event)"
-                class="w-full md:w-80 pl-10 pr-4 py-3 rounded-xl border border-gray-300 focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500 shadow-sm transition-shadow"
+    <section class="bg-[#fafafa] min-h-screen px-6 py-12 relative overflow-hidden">
+      <!-- Grid Background -->
+      <div class="absolute inset-0 bg-[linear-gradient(to_right,#80808012_1px,transparent_1px),linear-gradient(to_bottom,#80808012_1px,transparent_1px)] bg-[size:40px_40px]"></div>
+      <div class="max-w-7xl mx-auto relative z-10">
+
+        <div class="flex flex-col md:flex-row md:items-center justify-between mb-10 gap-6">
+          <h1 class="text-5xl font-black tracking-tighter uppercase italic text-gray-900">
+            Catálogo
+          </h1>
+          <p class="text-indigo-600 font-bold bg-indigo-50 px-4 py-2 rounded-full text-xs uppercase tracking-widest border border-indigo-100">
+            {{ finalProducts().length }} productos encontrados
+          </p>
+        </div>
+
+        <div class="bg-white/80 backdrop-blur-xl p-8 rounded-[2.5rem] mb-12 border border-gray-100 shadow-xl flex flex-wrap items-center gap-6">
+          
+          <div class="flex flex-col gap-2">
+            <span class="text-[10px] font-black uppercase tracking-widest text-indigo-600 ml-1">Categorías</span>
+            <div class="flex flex-wrap gap-2">
+              <button 
+                (click)="setCategory(null)" 
+                [class]="!selectedCategory() ? 'bg-indigo-600 text-white' : 'bg-white text-gray-500 border border-gray-200 hover:bg-gray-50'"
+                class="px-5 py-2.5 rounded-xl text-xs font-black uppercase tracking-wider transition-all"
               >
-              <svg class="absolute left-3 top-3.5 w-5 h-5 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z"></path></svg>
+                Todas
+              </button>
+              @for (cat of categories(); track $index) {
+                <button 
+                  (click)="setCategory($any(cat).idCategoria)"
+                  [class]="selectedCategory() === $any(cat).idCategoria ? 'bg-indigo-600 text-white' : 'bg-white text-gray-500 border border-gray-200 hover:bg-gray-50'"
+                  class="px-5 py-2.5 rounded-xl text-xs font-black uppercase tracking-wider transition-all"
+                >
+                  {{ $any(cat).nombreCategoria }}
+                </button>
+              }
             </div>
           </div>
+
+          <div class="flex flex-col gap-2">
+            <span class="text-[10px] font-black uppercase tracking-widest text-indigo-600 ml-1">Orden</span>
+            <select 
+              (change)="setSortOrder($event)"
+              class="bg-white border text-gray-600 border-gray-200 text-xs font-black uppercase tracking-wider rounded-xl px-4 py-2.5 outline-none focus:ring-2 focus:ring-indigo-500 transition-all cursor-pointer hover:bg-gray-50"
+            >
+              <option value="none">Relevancia</option>
+              <option value="price_asc">Precio: Menor a Mayor</option>
+              <option value="price_desc">Precio: Mayor a Menor</option>
+            </select>
+          </div>
+
+          <div class="flex flex-col gap-2">
+            <span class="text-[10px] font-black uppercase tracking-widest text-indigo-600 ml-1">Estado</span>
+            <label class="flex items-center gap-3 cursor-pointer group">
+              <div class="relative">
+                <input type="checkbox" checked (change)="showOnlyAvailable.set(!showOnlyAvailable())" class="sr-only peer">
+                <div class="w-10 h-6 bg-gray-200 rounded-full peer-checked:bg-indigo-600 transition-colors"></div>
+                <div class="absolute left-1 top-1 w-4 h-4 bg-white rounded-full transition-transform peer-checked:translate-x-4 border border-gray-300 peer-checked:border-none"></div>
+              </div>
+              <span class="text-xs font-black uppercase tracking-wider text-gray-500 group-hover:text-gray-900 transition-colors">Solo Disponibles</span>
+            </label>
+          </div>
+
         </div>
 
         @if (loading()) {
-          <app-loading-spinner message="Cargando el catálogo..."></app-loading-spinner>
-        } @else {
-          <div class="flex flex-col lg:flex-row gap-8">
-            
-            <!-- Filters Sidebar -->
-            <aside class="w-full lg:w-64 flex-shrink-0">
-              <div class="bg-white rounded-2xl p-6 shadow-sm border border-gray-100 sticky top-28">
-                <h3 class="font-bold text-gray-900 mb-4 flex items-center gap-2">
-                  <svg class="w-5 h-5 text-indigo-500" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 6V4m0 2a2 2 0 100 4m0-4a2 2 0 110 4m-6 8a2 2 0 100-4m0 4a2 2 0 110-4m0 4v2m0-6V4m6 6v10m6-2a2 2 0 100-4m0 4a2 2 0 110-4m0 4v2m0-6V4"></path></svg>
-                  Filtros
-                </h3>
-                
-                <!-- Category Filter -->
-                <div class="mb-6">
-                  <h4 class="text-sm font-semibold text-gray-700 uppercase tracking-wider mb-3">Categorías</h4>
-                  <div class="space-y-2 max-h-48 overflow-y-auto pr-2 custom-scrollbar">
-                    <label class="flex items-center cursor-pointer group">
-                      <input type="radio" name="category" [checked]="selectedCategory() === null" (change)="setCategory(null)" class="w-4 h-4 text-indigo-600 border-gray-300 focus:ring-indigo-500">
-                      <span class="ml-2 text-sm text-gray-600 group-hover:text-indigo-600 transition-colors">Todas</span>
-                    </label>
-                    @for (cat of categories(); track cat.idCategoria) {
-                      <label class="flex items-center cursor-pointer group">
-                        <input type="radio" name="category" [checked]="selectedCategory() === cat.idCategoria" (change)="setCategory(cat.idCategoria)" class="w-4 h-4 text-indigo-600 border-gray-300 focus:ring-indigo-500">
-                        <span class="ml-2 text-sm text-gray-600 group-hover:text-indigo-600 transition-colors line-clamp-1">{{ cat.nombreCategoria }}</span>
-                      </label>
-                    }
-                  </div>
-                </div>
-
-                <!-- Price Filter -->
-                <div class="mb-6">
-                  <h4 class="text-sm font-semibold text-gray-700 uppercase tracking-wider mb-3">Ordenamiento</h4>
-                  <select 
-                    [value]="sortOrder()"
-                    (change)="setSortOrder($event)"
-                    class="block w-full text-sm rounded-lg border-gray-300 shadow-sm focus:border-indigo-500 focus:ring-indigo-500 p-2.5 bg-gray-50 border">
-                    <option value="none">Relevancia</option>
-                    <option value="price_asc">Precio: Menor a Mayor</option>
-                    <option value="price_desc">Precio: Mayor a Menor</option>
-                  </select>
-                </div>
-
-                <!-- Availability Filter -->
-                <div>
-                  <h4 class="text-sm font-semibold text-gray-700 uppercase tracking-wider mb-3">Disponibilidad</h4>
-                  <label class="flex items-center cursor-pointer group">
-                    <input type="checkbox" [checked]="showOnlyAvailable()" (change)="toggleAvailable()" class="w-4 h-4 rounded text-indigo-600 border-gray-300 focus:ring-indigo-500">
-                    <span class="ml-2 text-sm text-gray-600 group-hover:text-indigo-600 transition-colors">Solo disponibles</span>
-                  </label>
-                </div>
-
-              </div>
-            </aside>
-
-            <!-- Product Grid -->
-            <div class="flex-grow">
-              
-              <div class="mb-4 text-sm text-gray-500">
-                Mostrando <span class="font-bold text-gray-900">{{ filteredProducts().length }}</span> productos
-              </div>
-
-              @if (filteredProducts().length === 0) {
-                <div class="bg-white rounded-2xl p-12 text-center border border-gray-200 shadow-sm flex flex-col items-center justify-center min-h-[400px]">
-                  <div class="w-24 h-24 bg-gray-50 rounded-full flex items-center justify-center mb-6">
-                    <svg class="w-12 h-12 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9.172 16.172a4 4 0 015.656 0M9 10h.01M15 10h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z"></path></svg>
-                  </div>
-                  <h3 class="text-xl font-bold text-gray-900 mb-2">No se encontraron productos</h3>
-                  <p class="text-gray-500 mb-6 max-w-sm">Intenta ajustar tus filtros o buscar con términos diferentes para encontrar lo que buscas.</p>
-                  <button (click)="resetFilters()" class="text-indigo-600 font-semibold hover:text-indigo-800 transition-colors">Limpiar filtros</button>
-                </div>
-              } @else {
-                <div class="grid grid-cols-1 sm:grid-cols-2 xl:grid-cols-3 gap-6">
-                  @for (product of filteredProducts(); track product.idProducto) {
-                    <app-product-card [product]="product"></app-product-card>
-                  }
-                </div>
-              }
-
-            </div>
+          <div class="grid md:grid-cols-3 gap-8">
+            @for (i of [1,2,3,4,5,6]; track i) {
+              <div class="bg-gray-100 rounded-[2.5rem] h-80 animate-pulse border border-gray-200"></div>
+            }
           </div>
+        } @else {
+
+          <div class="grid md:grid-cols-3 gap-8">
+            @for (p of finalProducts(); track $index) {
+              <app-product-card [product]="p"></app-product-card>
+            }
+          </div>
+
+          @if (finalProducts().length === 0) {
+            <div class="text-center py-24 bg-white rounded-[3rem] border-2 border-dashed border-gray-200 mt-12 shadow-sm">
+              <div class="w-20 h-20 bg-gray-50 rounded-full flex items-center justify-center mx-auto mb-6 text-indigo-300">
+                <svg class="w-10 h-10" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z"></path></svg>
+              </div>
+              <h3 class="text-3xl font-black text-gray-900 mb-2 uppercase tracking-tighter">Sin coincidencias</h3>
+              <p class="text-gray-500 font-medium">Prueba a limpiar los filtros para ver más productos.</p>
+              <button (click)="resetFilters()" class="mt-8 px-8 py-3 bg-indigo-600 text-white rounded-xl font-black uppercase text-xs tracking-widest hover:bg-indigo-700 transition-all shadow-lg hover:shadow-indigo-600/30">Limpiar Todo</button>
+            </div>
+          }
+
         }
+
       </div>
-    </div>
-    
+    </section>
+
     <app-footer></app-footer>
-  `,
-  styles: [`
-    .custom-scrollbar::-webkit-scrollbar { width: 4px; }
-    .custom-scrollbar::-webkit-scrollbar-track { background: #f1f1f1; border-radius: 4px; }
-    .custom-scrollbar::-webkit-scrollbar-thumb { background: #c7c7cc; border-radius: 4px; }
-    .custom-scrollbar::-webkit-scrollbar-thumb:hover { background: #a1a1aa; }
-  `]
+  `
 })
 export class CatalogComponent implements OnInit {
+
   catalogService = inject(CatalogService);
   categoryService = inject(CategoryService);
   route = inject(ActivatedRoute);
 
   loading = signal(true);
-  products = signal<Product[]>([]);
-  categories = signal<Category[]>([]);
+  allProducts = signal<any[]>([]);
+  categories = signal<any[]>([]);
 
-  // Filtering signals
-  searchTerm = signal('');
   selectedCategory = signal<string | null>(null);
-  showOnlyAvailable = signal(false);
-  sortOrder = signal<'none' | 'price_asc' | 'price_desc'>('none');
+  sortOrder = signal('none');
+  showOnlyAvailable = signal(true);
 
   filteredProducts = computed(() => {
-    let result = this.products();
+    let p = this.allProducts();
 
-    if (this.searchTerm()) {
-      const term = this.searchTerm().toLowerCase();
-      result = result.filter(p => p.nombreProducto.toLowerCase().includes(term) || p.descripcion.toLowerCase().includes(term));
+    if (this.showOnlyAvailable()) {
+      p = p.filter(x => x.disponible);
     }
 
     if (this.selectedCategory()) {
-      result = result.filter(p => p.idCategoria === this.selectedCategory());
+      p = p.filter(x => x.idCategoria === this.selectedCategory());
     }
 
-    if (this.showOnlyAvailable()) {
-      result = result.filter(p => p.disponible);
-    }
+    return p;
+  });
+
+  finalProducts = computed(() => {
+    let p = [...this.filteredProducts()];
 
     if (this.sortOrder() === 'price_asc') {
-      result.sort((a,b) => a.precio - b.precio);
-    } else if (this.sortOrder() === 'price_desc') {
-      result.sort((a,b) => b.precio - a.precio);
+      p.sort((a, b) => a.precio - b.precio);
     }
 
-    return result;
+    if (this.sortOrder() === 'price_desc') {
+      p.sort((a, b) => b.precio - a.precio);
+    }
+
+    return p;
   });
 
   ngOnInit() {
     this.route.queryParams.subscribe(params => {
-      if (params['category']) {
-        this.selectedCategory.set(params['category']);
+      if (params['categoria']) {
+        this.selectedCategory.set(params['categoria']);
       }
     });
-
     this.loadData();
   }
 
   loadData() {
     forkJoin({
-      products: this.catalogService.getProducts(),
-      categories: this.categoryService.getCategories()
+      prods: this.catalogService.getProducts().pipe(
+        catchError(() => of([]))
+      ),
+      cats: this.categoryService.getCategories().pipe(
+        catchError(() => of([]))
+      )
     }).subscribe({
       next: (res) => {
-        this.products.set(res.products);
-        this.categories.set(res.categories);
+        this.allProducts.set(res.prods);
+        this.categories.set(res.cats);
         this.loading.set(false);
       },
       error: () => {
@@ -201,28 +186,17 @@ export class CatalogComponent implements OnInit {
     });
   }
 
-  onSearch(event: Event) {
-    const input = event.target as HTMLInputElement;
-    this.searchTerm.set(input.value);
-  }
-
   setCategory(id: string | null) {
     this.selectedCategory.set(id);
   }
 
-  toggleAvailable() {
-    this.showOnlyAvailable.update(v => !v);
-  }
-
-  setSortOrder(event: Event) {
-    const select = event.target as HTMLSelectElement;
-    this.sortOrder.set(select.value as any);
+  setSortOrder(e: any) {
+    this.sortOrder.set(e.target.value);
   }
 
   resetFilters() {
-    this.searchTerm.set('');
     this.selectedCategory.set(null);
-    this.showOnlyAvailable.set(false);
     this.sortOrder.set('none');
+    this.showOnlyAvailable.set(true);
   }
 }

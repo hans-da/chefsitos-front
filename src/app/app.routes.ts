@@ -15,6 +15,10 @@ export const routes: Routes = [
     loadComponent: () => import('./features/catalog/catalog.component').then(m => m.CatalogComponent)
   },
   {
+    path: 'destacados',
+    loadComponent: () => import('./features/catalog/featured-catalog.component').then(m => m.FeaturedCatalogComponent)
+  },
+  {
     path: 'productos/:id',
     loadComponent: () => import('./features/product-detail/product-detail.component').then(m => m.ProductDetailComponent)
   },
@@ -38,22 +42,11 @@ export const routes: Routes = [
     path: 'admin',
     canActivate: [adminGuard],
     children: [
-      {
-        path: '',
-        loadComponent: () => import('./features/admin/dashboard/dashboard.component').then(m => m.AdminDashboardComponent)
-      },
-      {
-        path: 'productos',
-        loadComponent: () => import('./features/admin/products/products.component').then(m => m.AdminProductsComponent)
-      },
-      {
-        path: 'categorias',
-        loadComponent: () => import('./features/admin/categories/categories.component').then(m => m.AdminCategoriesComponent)
-      },
-      {
-        path: 'ordenes',
-        loadComponent: () => import('./features/admin/orders/orders.component').then(m => m.AdminOrdersComponent)
-      }
+      { path: '', redirectTo: 'dashboard', pathMatch: 'full' },
+      { path: 'dashboard', loadComponent: () => import('./features/admin/dashboard/dashboard.component').then(m => m.AdminDashboardComponent) },
+      { path: 'productos', loadComponent: () => import('./features/admin/products/products.component').then(m => m.AdminProductsComponent) },
+      { path: 'categorias', loadComponent: () => import('./features/admin/categories/categories.component').then(m => m.AdminCategoriesComponent) },
+      { path: 'ordenes', loadComponent: () => import('./features/admin/orders/orders.component').then(m => m.AdminOrdersComponent) }
     ]
   },
   {
@@ -61,11 +54,7 @@ export const routes: Routes = [
     loadComponent: () => import('./features/error/error.component').then(m => m.ErrorComponent)
   },
   {
-    path: '404',
-    loadComponent: () => import('./features/not-found/not-found.component').then(m => m.NotFoundComponent)
-  },
-  {
     path: '**',
-    redirectTo: '404'
+    loadComponent: () => import('./features/not-found/not-found.component').then(m => m.NotFoundComponent)
   }
 ];

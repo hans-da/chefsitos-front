@@ -7,42 +7,50 @@ import { AuthService } from '../../core/services/auth.service';
   standalone: true,
   imports: [CommonModule],
   template: `
-    <div class="min-h-screen bg-gray-50 flex flex-col justify-center py-12 sm:px-6 lg:px-8 bg-cover bg-center relative" style="background-image: url('https://images.unsplash.com/photo-1556742049-0cfed4f6a45d?ixlib=rb-4.0.3&auto=format&fit=crop&w=2000&q=80');">
-      <div class="absolute inset-0 bg-gray-900/40 backdrop-blur-sm"></div>
+    <div class="min-h-screen bg-gray-50 flex flex-col justify-center py-12 px-4 sm:px-6 lg:px-8">
       
-      <div class="relative sm:mx-auto sm:w-full sm:max-w-md z-10">
-        <div class="mx-auto w-16 h-16 bg-white rounded-2xl flex items-center justify-center shadow-2xl shadow-indigo-500/50 mb-6 transform -rotate-3 hover:rotate-0 transition-transform">
-           <svg class="w-10 h-10 text-indigo-600" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M16 11V7a4 4 0 00-8 0v4M5 9h14l1 12H4L5 9z"></path></svg>
+      <div class="sm:mx-auto sm:w-full sm:max-w-md text-center mb-8">
+        <div class="mx-auto w-16 h-16 bg-white rounded-full flex items-center justify-center shadow-lg border border-gray-100 mb-4">
+           <svg class="w-8 h-8 text-indigo-600" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M12 15v2m-6 4h12a2 2 0 002-2v-6a2 2 0 00-2-2H6a2 2 0 00-2 2v6a2 2 0 002 2zm10-10V7a4 4 0 00-8 0v4h8z"></path></svg>
         </div>
-        <h2 class="mt-2 text-center text-4xl font-extrabold text-white tracking-tight">Bienvenido a UAMIShop</h2>
-        <p class="mt-3 text-center text-indigo-100 max-w-sm mx-auto">Selecciona el perfil con el que deseas ingresar a la plataforma (Simulación frontend).</p>
+        <h2 class="text-3xl font-extrabold text-gray-900 tracking-tight italic">UAMI<span class="text-indigo-600">Shop</span></h2>
+        <p class="text-xs font-bold text-gray-500 uppercase tracking-widest mt-2">Portal de Acceso</p>
       </div>
 
-      <div class="mt-8 sm:mx-auto sm:w-full sm:max-w-md relative z-10">
-         <div class="bg-white/80 backdrop-blur-md py-10 px-6 shadow-2xl rounded-3xl sm:px-10 border border-white/40">
+      <div class="sm:mx-auto sm:w-full sm:max-w-md">
+         <div class="bg-white py-8 px-4 shadow-2xl shadow-indigo-300/40 sm:rounded-2xl sm:px-10 border border-gray-100 relative overflow-hidden">
+           <div class="absolute -top-20 -right-20 w-60 h-60 bg-indigo-600 rounded-full blur-[80px] opacity-10 pointer-events-none"></div>
+           <div class="absolute -bottom-20 -left-20 w-60 h-60 bg-emerald-500 rounded-full blur-[80px] opacity-10 pointer-events-none"></div>
            
-           <div class="space-y-6">
+           <div class="space-y-6 relative z-10">
               <button 
                 (click)="loginCustomer()"
-                class="w-full flex justify-center py-4 px-4 border border-transparent rounded-2xl shadow-sm text-lg font-medium text-white bg-indigo-600 hover:bg-indigo-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500 transition-all transform hover:-translate-y-1 hover:shadow-lg">
-                Entrar como Cliente
+                class="w-full flex justify-center items-center py-4 px-4 border border-transparent rounded-xl shadow-sm text-sm font-bold text-white bg-indigo-600 hover:bg-indigo-700 transition-colors focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500">
+                <svg class="w-5 h-5 mr-3" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M16 7a4 4 0 11-8 0 4 4 0 018 0zM12 14a7 7 0 00-7 7h14a7 7 0 00-7-7z"></path></svg>
+                ENTRAR COMO CLIENTE
               </button>
               
               <div class="relative">
                 <div class="absolute inset-0 flex items-center">
-                  <div class="w-full border-t border-gray-300"></div>
+                  <div class="w-full border-t border-gray-200"></div>
                 </div>
                 <div class="relative flex justify-center text-sm">
-                  <span class="px-2 bg-transparent text-gray-500 bg-white rounded-full leading-relaxed">O</span>
+                  <span class="px-3 bg-white text-gray-500 font-medium">o elige tu perfil</span>
                 </div>
               </div>
 
               <button 
                 (click)="loginAdmin()"
-                class="w-full flex justify-center py-4 px-4 border-2 border-indigo-600 rounded-2xl shadow-sm text-lg font-medium text-indigo-600 bg-transparent hover:bg-indigo-50 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500 transition-all transform hover:-translate-y-1">
-                Entrar como Administrador
+                class="w-full flex justify-center items-center py-4 px-4 border-2 border-gray-200 rounded-xl shadow-sm text-sm font-bold text-gray-700 bg-white hover:bg-gray-50 transition-colors focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500">
+                <svg class="w-5 h-5 mr-3 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10.325 4.317c.426-1.756 2.924-1.756 3.35 0a1.724 1.724 0 002.573 1.066c1.543-.94 3.31.826 2.37 2.37a1.724 1.724 0 001.065 2.572c1.756.426 1.756 2.924 0 3.35a1.724 1.724 0 00-1.066 2.573c.94 1.543-.826 3.31-2.37 2.37a1.724 1.724 0 00-2.572 1.065c-.426 1.756-2.924 1.756-3.35 0a1.724 1.724 0 00-2.573-1.066c-1.543.94-3.31-.826-2.37-2.37a1.724 1.724 0 00-1.065-2.572c-1.756-.426-1.756-2.924 0-3.35a1.724 1.724 0 001.066-2.573c-.94-1.543.826-3.31 2.37-2.37.996.608 2.296.07 2.572-1.065z"></path></svg>
+                ENTRAR COMO ADMINISTRADOR
               </button>
            </div>
+           
+           <div class="mt-8 text-center">
+             <p class="text-xs text-gray-400 font-medium">Ingeniería de Software • Unidad Iztapalapa</p>
+           </div>
+
          </div>
       </div>
     </div>
@@ -50,12 +58,6 @@ import { AuthService } from '../../core/services/auth.service';
 })
 export class LoginComponent {
   auth = inject(AuthService);
-
-  loginCustomer() {
-    this.auth.loginAsCustomer();
-  }
-
-  loginAdmin() {
-    this.auth.loginAsAdmin();
-  }
+  loginCustomer() { this.auth.loginAsCustomer(); }
+  loginAdmin() { this.auth.loginAsAdmin(); }
 }

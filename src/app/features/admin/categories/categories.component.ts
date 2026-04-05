@@ -3,7 +3,7 @@ import { CommonModule } from '@angular/common';
 import { FormBuilder, ReactiveFormsModule, Validators } from '@angular/forms';
 import { CategoryService } from '../../../core/services/category.service';
 import { NotificationService } from '../../../core/services/notification.service';
-import { Category } from '../../../core/models/category.model';
+import { Category, CategoryRequest } from '../../../core/models/category.model';
 import { NavbarComponent } from '../../../shared/components/navbar/navbar.component';
 import { FooterComponent } from '../../../shared/components/footer/footer.component';
 
@@ -88,7 +88,8 @@ import { FooterComponent } from '../../../shared/components/footer/footer.compon
                       </div>
                       <div>
                         <label class="block text-sm font-bold text-gray-700 mb-2">Categoría Padre (Opcional)</label>
-                        <select formControlName="idCategoriaPadre" class="block w-full border-gray-300 rounded-xl shadow-sm focus:border-indigo-500 focus:ring-indigo-500 sm:text-sm px-4 py-3 bg-gray-50 border">
+                        <!-- El form usa categoriaPadreId para coincidir con el request del backend -->
+                        <select formControlName="categoriaPadreId" class="block w-full border-gray-300 rounded-xl shadow-sm focus:border-indigo-500 focus:ring-indigo-500 sm:text-sm px-4 py-3 bg-gray-50 border">
                           <option [value]="null">Ninguna (Categoría Raíz)</option>
                           @for (cat of categories(); track cat.idCategoria) {
                              @if (cat.idCategoria !== currentEditId) {
@@ -134,10 +135,11 @@ export class AdminCategoriesComponent implements OnInit {
   isEditing = signal(false);
   currentEditId: string | null = null;
 
+  // El form usa categoriaPadreId para que al enviar coincida con el contrato del backend.
   catForm = this.fb.group({
     nombreCategoria: ['', Validators.required],
     descripcion: ['', Validators.required],
-    idCategoriaPadre: [null]
+    categoriaPadreId: [null as string | null]
   });
 
   ngOnInit() {
@@ -154,7 +156,7 @@ export class AdminCategoriesComponent implements OnInit {
     this.isModalOpen.set(true);
     this.isEditing.set(false);
     this.currentEditId = null;
-    this.catForm.reset();
+    this.catForm.reset({ nombreCategoria: '', descripcion: '', categoriaPadreId: null });
   }
 
   closeModal() {
@@ -164,10 +166,11 @@ export class AdminCategoriesComponent implements OnInit {
   editCategory(cat: Category) {
     this.isEditing.set(true);
     this.currentEditId = cat.idCategoria;
+    // Leer idCategoriaPadre de la RESPUESTA y ponerlo en el campo categoriaPadreId del FORM
     this.catForm.patchValue({
       nombreCategoria: cat.nombreCategoria,
       descripcion: cat.descripcion,
-      idCategoriaPadre: (cat.idCategoriaPadre as any) || null
+      categoriaPadreId: cat.idCategoriaPadre || null
     });
     this.isModalOpen.set(true);
   }
@@ -175,22 +178,34 @@ export class AdminCategoriesComponent implements OnInit {
   saveCategory() {
     if (this.catForm.invalid) return;
 
-    const val = this.catForm.value as Partial<Category>;
+    // Construir el CategoryRequest con el campo correcto para el backend
+    const formVal = this.catForm.value;
+    const payload: CategoryRequest = {
+      nombreCategoria: formVal.nombreCategoria!,
+      descripcion: formVal.descripcion!,
+      categoriaPadreId: formVal.categoriaPadreId || null
+    };
 
     if (this.isEditing() && this.currentEditId) {
-      this.categoryService.updateCategory(this.currentEditId, val).subscribe({
+      this.categoryService.updateCategory(this.currentEditId, payload).subscribe({
         next: () => {
           this.notification.success('Categoría actualizada');
           this.loadCategories();
           this.closeModal();
+        },
+        error: (err) => {
+          this.notification.error(err?.error?.message || 'Error al actualizar la categoría');
         }
       });
     } else {
-      this.categoryService.createCategory(val).subscribe({
+      this.categoryService.createCategory(payload).subscribe({
         next: () => {
-          this.notification.success('Categoría creada');
+          this.notification.success('Categoría creada exitosamente');
           this.loadCategories();
           this.closeModal();
+        },
+        error: (err) => {
+          this.notification.error(err?.error?.message || 'Error al crear la categoría');
         }
       });
     }
