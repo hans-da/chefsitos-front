@@ -34,23 +34,27 @@ import { CartService } from '../../../core/services/cart.service';
           </a>
 
           <div class="hidden md:flex items-center gap-2">
-            <a routerLink="/" routerLinkActive="text-indigo-600 bg-indigo-50/50" [routerLinkActiveOptions]="{exact: true}" 
-               class="px-6 py-2.5 rounded-xl text-[10px] font-black uppercase tracking-[0.2em] text-gray-400 hover:text-gray-900 transition-all">Inicio</a>
-            <a routerLink="/catalogo" routerLinkActive="text-indigo-600 bg-indigo-50/50" 
-               class="px-6 py-2.5 rounded-xl text-[10px] font-black uppercase tracking-[0.2em] text-gray-400 hover:text-gray-900 transition-all">Explorar</a>
-            <a routerLink="/destacados" routerLinkActive="text-indigo-600 bg-indigo-50/50" 
-               class="px-6 py-2.5 rounded-xl text-[10px] font-black uppercase tracking-[0.2em] text-gray-400 hover:text-gray-900 transition-all">Destacados</a>
+            @if (!auth.isAdmin()) {
+              <a routerLink="/" routerLinkActive="text-indigo-600 bg-indigo-50/50" [routerLinkActiveOptions]="{exact: true}" 
+                 class="px-6 py-2.5 rounded-xl text-[10px] font-black uppercase tracking-[0.2em] text-gray-400 hover:text-gray-900 transition-all">Inicio</a>
+              <a routerLink="/catalogo" routerLinkActive="text-indigo-600 bg-indigo-50/50" 
+                 class="px-6 py-2.5 rounded-xl text-[10px] font-black uppercase tracking-[0.2em] text-gray-400 hover:text-gray-900 transition-all">Explorar</a>
+              <a routerLink="/destacados" routerLinkActive="text-indigo-600 bg-indigo-50/50" 
+                 class="px-6 py-2.5 rounded-xl text-[10px] font-black uppercase tracking-[0.2em] text-gray-400 hover:text-gray-900 transition-all">Destacados</a>
+            }
           </div>
 
           <div class="flex items-center gap-4">
-            <a routerLink="/carrito" class="relative p-3 text-gray-400 hover:text-indigo-600 transition-all rounded-2xl hover:bg-indigo-50 active:scale-90 group">
-              <svg class="w-7 h-7" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M16 11V7a4 4 0 00-8 0v4M5 9h14l1 12H4L5 9z"></path></svg>
-              @if (cartCount() > 0) {
-                <span class="absolute top-2 right-2 flex h-5 w-5 items-center justify-center rounded-full bg-emerald-500 text-[9px] font-black text-white ring-4 ring-white animate-bounce">
-                  {{ cartCount() }}
-                </span>
-              }
-            </a>
+            @if (!auth.isAdmin()) {
+              <a routerLink="/carrito" class="relative p-3 text-gray-400 hover:text-indigo-600 transition-all rounded-2xl hover:bg-indigo-50 active:scale-90 group">
+                <svg class="w-7 h-7" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M16 11V7a4 4 0 00-8 0v4M5 9h14l1 12H4L5 9z"></path></svg>
+                @if (cartCount() > 0) {
+                  <span class="absolute top-2 right-2 flex h-5 w-5 items-center justify-center rounded-full bg-emerald-500 text-[9px] font-black text-white ring-4 ring-white animate-bounce">
+                    {{ cartCount() }}
+                  </span>
+                }
+              </a>
+            }
 
             <div class="relative">
               @if (auth.isAuthenticated()) {
@@ -67,8 +71,9 @@ import { CartService } from '../../../core/services/cart.service';
                     </div>
                     @if (auth.isAdmin()) {
                       <a routerLink="/admin" (click)="dropdownOpen.set(false)" class="flex items-center gap-3 px-4 py-3 text-[10px] font-black uppercase tracking-widest text-indigo-600 hover:bg-indigo-50 rounded-xl transition-all mb-1 border-b border-gray-50">Panel Admin</a>
+                    } @else {
+                      <a routerLink="/mis-ordenes" (click)="dropdownOpen.set(false)" class="flex items-center gap-3 px-4 py-3 text-[10px] font-black uppercase tracking-widest text-gray-600 hover:bg-indigo-50 hover:text-indigo-600 rounded-xl transition-all">Mis Pedidos</a>
                     }
-                    <a routerLink="/mis-ordenes" (click)="dropdownOpen.set(false)" class="flex items-center gap-3 px-4 py-3 text-[10px] font-black uppercase tracking-widest text-gray-600 hover:bg-indigo-50 hover:text-indigo-600 rounded-xl transition-all">Mis Pedidos</a>
                     <button (click)="logout()" class="w-full flex items-center gap-3 px-4 py-3 text-[10px] font-black uppercase tracking-widest text-red-400 hover:bg-red-50 rounded-xl transition-all border-t border-gray-50 mt-2 pt-4 italic">Cerrar Sesión</button>
                   </div>
                 }

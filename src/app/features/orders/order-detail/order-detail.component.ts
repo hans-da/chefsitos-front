@@ -79,10 +79,10 @@ const PROVEEDOR_MOCK = 'UAMIShop Express';
                         <span class="text-sm font-medium text-gray-700">Pago procesado</span>
                       </div>
 
-                      <!-- Step 3: Preparación -->
+                      <!-- Step 3: En proceso -->
                       <div class="flex flex-row sm:flex-col items-center gap-4 sm:gap-2">
                         <div class="w-10 h-10 rounded-full flex items-center justify-center font-bold shadow-md transition-colors" [ngClass]="getStepClass('EN_PREPARACION')">3</div>
-                        <span class="text-sm font-medium text-gray-700">En preparación</span>
+                        <span class="text-sm font-medium text-gray-700">En proceso</span>
                       </div>
 
                       <!-- Step 4: Enviada -->

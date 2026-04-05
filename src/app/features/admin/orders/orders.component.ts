@@ -83,7 +83,7 @@ function generarGuiaEnvioMock(): string {
 
                           @if (order.estado === 'PAGO_PROCESADO') {
                             <button (click)="markInPreparation(order.id)" class="text-blue-600 hover:text-blue-900 bg-blue-50 hover:bg-blue-100 px-3 py-1.5 rounded-lg transition-colors font-bold text-xs">
-                              Iniciar Preparación
+                              Procesar Pedido
                             </button>
                           }
 
@@ -249,10 +249,10 @@ export class AdminOrdersComponent implements OnInit {
   markInPreparation(id: string) {
     this.orderService.markInPreparation(id).subscribe({
       next: () => {
-        this.notification.success('Orden marcada en preparación');
+        this.notification.success('Orden procesada exitosamente');
         this.loadOrders();
       },
-      error: () => this.notification.error('Error al marcar en preparación')
+      error: () => this.notification.error('Error al procesar la orden')
     });
   }
 

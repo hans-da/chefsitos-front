@@ -1,9 +1,11 @@
 import { Routes } from '@angular/router';
 import { adminGuard } from './core/guards/admin.guard';
+import { customerGuard } from './core/guards/customer.guard';
 
 export const routes: Routes = [
   {
     path: '',
+    canActivate: [customerGuard],
     loadComponent: () => import('./features/home/home.component').then(m => m.HomeComponent)
   },
   {
@@ -12,30 +14,37 @@ export const routes: Routes = [
   },
   {
     path: 'catalogo',
+    canActivate: [customerGuard],
     loadComponent: () => import('./features/catalog/catalog.component').then(m => m.CatalogComponent)
   },
   {
     path: 'destacados',
+    canActivate: [customerGuard],
     loadComponent: () => import('./features/catalog/featured-catalog.component').then(m => m.FeaturedCatalogComponent)
   },
   {
     path: 'productos/:id',
+    canActivate: [customerGuard],
     loadComponent: () => import('./features/product-detail/product-detail.component').then(m => m.ProductDetailComponent)
   },
   {
     path: 'carrito',
+    canActivate: [customerGuard],
     loadComponent: () => import('./features/cart/cart.component').then(m => m.CartComponent)
   },
   {
     path: 'checkout',
+    canActivate: [customerGuard],
     loadComponent: () => import('./features/checkout/checkout.component').then(m => m.CheckoutComponent)
   },
   {
     path: 'mis-ordenes',
+    canActivate: [customerGuard],
     loadComponent: () => import('./features/orders/orders.component').then(m => m.OrdersComponent)
   },
   {
     path: 'mis-ordenes/:id',
+    canActivate: [customerGuard],
     loadComponent: () => import('./features/orders/order-detail/order-detail.component').then(m => m.OrderDetailComponent)
   },
   {
