@@ -1,0 +1,9 @@
+services:
+  chefsitos-front:
+    build: .
+    container_name: chefsitos-front
+    ports:
+      - "8084:80"
+    extra_hosts:
+      - "host.docker.internal:host-gateway"
+    restart: unless-stopped
